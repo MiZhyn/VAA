@@ -1,0 +1,664 @@
+---
+title: "TakeHome Ex03"
+author: "Michelle zhang"
+---
+
+# **1. Recap of Sub Q1**
+
+FishEye analysts have long wanted to better understand the flow of commercially caught fish through Oceanus's various ports. However, when loading data into CatchNet, they discovered that they had purchased port exit records (i.e., records of trucks/trains leaving the port area) instead of ship off-load records. Port exit records do not include information on which vessels delivered the products. Given this limitation, we need to develop a visualization system to associate vessels with their probable cargos, analyze which vessels delivered which products and when, and identify seasonal trends and anomalies in the port exit records.
+
+## **1.1 Approach for Sub Q1**
+
+**Goal**: Develop a visualization system to associate vessels with their probable cargos.
+
+**Steps**:
+
+1.  Using Transaction_data, Harbor_Reports_data, and TransponderPing data, gradually match orders with vessels, and filter out unlikely vessels by examining their historical routes with vessel_movement_data.
+
+2.  Develop an interactive visualization to display the association between cargo and probable vessels.
+
+3.  Analyze and visualize the seasonality of cargo and detect anomalies in port exit records to gain actionable insights.
+
+# **2. Data Import and Processing**
+
+## **2.1. Import packages**
+
+```{r}
+pacman::p_load(sf, tidyverse,jsonlite,dplyr,stringr,knitr,ggplot2,lubridate,ggiraph,viridis,plotly,gridExtra,readr)
+```
+
+## **2.2 Import Data**
+
+```{r}
+vessel_movement_data <- read_rds("vessel_movement_data.rds")
+Harbor_Reports_data <- read_rds("Harbor_Reports_data.rds")
+Transaction_data <- read_rds("Transaction_data.rds")
+```
+
+::: panel-tabset
+### Vessel Movement data
+
+```{r}
+head(vessel_movement_data)
+```
+
+### Harbor Reports data
+
+```{r}
+head(Transaction_data)
+```
+
+### Transaction data
+
+```{r}
+head(Harbor_Reports_data)
+```
+:::
+
+# **3. Addressing Mini-challenge 2- Step 1 Identifying Vessels Associated with Each Order Using** Harbor_Reports_data
+
+**Objective**: Identify the vessels associated with each order by merging Transaction_data and Harbor_Reports_data based on time and port.
+
+## 3.1 **Data Merging**:
+
+```{r}
+  merged_data <- left_join(Transaction_data, Harbor_Reports_data, by = c("target", "date_added"), suffix = c(".transaction", ".harborreport"))
+```
+
+![](images/clipboard-1246465969.png)
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# 找出多对多关系的行
+transaction_counts <- Transaction_data %>%
+  group_by(target, date_added) %>%
+  tally(name = "transaction_count")
+
+harborreport_counts <- Harbor_Reports_data %>%
+  group_by(target, date_added) %>%
+  tally(name = "harborreport_count")
+
+many_to_many <- transaction_counts %>%
+  inner_join(harborreport_counts, by = c("target", "date_added")) %>%
+  filter(transaction_count > 1 | harborreport_count > 1) %>%
+  mutate(many_to_many = TRUE)
+
+# 标记 Transaction_data 中的多对多关系
+suppressWarnings({
+Transaction_datam <- Transaction_data %>%
+  left_join(many_to_many %>% select(target, date_added, many_to_many), by = c("target", "date_added")) %>%
+  mutate(many_to_many = ifelse(is.na(many_to_many), FALSE, many_to_many))
+})
+
+# 合并数据框并保留多对多标记
+suppressWarnings({
+merged_data <- left_join(Transaction_datam, Harbor_Reports_data, by = c("target", "date_added"), suffix = c(".transaction", ".harborreport"))%>%
+  arrange(date_added)
+})
+
+many_to_many_records <- merged_data %>%
+  filter(many_to_many == TRUE)
+```
+
+```{r}
+head(merged_data)
+```
+
+Note that this will result in a many-to-many relationship where each order may correspond to multiple vessels.In subsequent steps, apply additional criteria and filters to narrow down the list of potential vessels for each order.
+
+## 3.2 Identifying Matched Records
+
+After filtering all many-to-many relationships, we identified two possibilities:
+
+**1.A vessel transported multiple orders：** This situation is reasonable and can be directly matched. For example, the "AlbacoreAngler7D" fishing vessel transported orders "cargo_2035_266231e2," "cargo_2035_30645f1a," and "cargo_2035_31189bb6" to the city of Packland.
+
+![](images/clipboard-4128795925.png)
+
+**2.An order shows as being possibly transported by multiple vessels.** For instance, "cargo_2035_30547452a" might have been transported by either "TransAtlantic47A9" or "SeawayServicesC71." Further filtering is needed to determine the specific vessel.
+
+![](images/clipboard-2370700126.png)
+
+Using this method, 32% of the records have been matched. The remaining 67% of the records will be further analyzed in subsequent steps to identify potential corresponding vessels.
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+# Calculate the number of source.harborreport counts for each combination
+harborreport_counts <- merged_data %>%
+  group_by(date_added, source.transaction, target) %>%
+  summarise(harborreport_count = n_distinct(source.harborreport), .groups = 'drop')
+
+# Update the many_to_many column, set to FALSE only when the condition is met
+merged_data_clean <- merged_data %>%
+  left_join(harborreport_counts, by = c("date_added", "source.transaction", "target")) %>%
+  mutate(many_to_many = ifelse(many_to_many == TRUE & harborreport_count == 1, FALSE, many_to_many))
+
+merged_data_clean <- merged_data_clean %>%
+  mutate(unmatch = ifelse(many_to_many == TRUE | is.na(source.harborreport), "unmatch", "match"))
+
+Transaction_matchresult1 <- merged_data_clean %>%
+  select(date_added, source.transaction, target, unmatch) %>%
+  distinct()
+
+Transaction_matchresult1match <- Transaction_matchresult1 %>%
+  group_by(unmatch) %>%
+  summarise(Count = n()) %>%
+  mutate(Proportion = paste0(round(Count / sum(Count) * 100, 2), "%"))
+```
+
+```{r}
+kable(Transaction_matchresult1match, align = "c")
+```
+
+## 3.3 Visualization to Associate Cargos with Probable Vessels
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+# 数据处理
+
+Transaction_matchresult1_visual<- merged_data_clean %>%
+group_by(date_added, source.transaction, target) %>%
+mutate(probable_vessel = case_when(
+           unmatch == "match" ~ source.harborreport,
+           is.na(source.harborreport) ~ NA_character_,
+           TRUE ~ paste(unique(source.harborreport), collapse = ", ")
+         )) %>%
+select(date_added, source.transaction, target,unmatch,probable_vessel)%>%
+distinct()
+
+# 将date_added列转换为日期格式
+Transaction_matchresult1_visual$date_added <- ymd(Transaction_matchresult1_visual$date_added)
+
+# 提取季度信息
+Transaction_matchresult1_visual <- Transaction_matchresult1_visual %>%
+  mutate(quarter = paste0(year(date_added), "-Q", quarter(date_added)))
+
+# 创建交互式散点图
+p <- ggplot(Transaction_matchresult1_visual, aes(x = quarter, y = 0, fill = unmatch,
+                                                 data_id = source.transaction,
+                                                 tooltip = paste("Date:", date_added, "<br>",
+                                                                 "Source Transaction:", source.transaction, "<br>",
+                                                                 "Probable Vessel:", probable_vessel))) +
+  geom_point_interactive(size = 5, shape = 21, color = "white", 
+                         position = position_jitter(width = 0.4, height = 0.05)) +
+  scale_fill_manual(values = c("match" = "green", "unmatch" = "red")) +
+  labs(title = "Summary of Cargos Match across Date & Quantity",
+       x = "Transaction Quarter", y = NULL, fill = "Match Status") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 20),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.text = element_text(size = 20),
+        strip.text.y = element_text(size = 20, angle = 0),
+        legend.position = "top",
+        strip.background = element_rect(fill = "gray80", color = "gray50"), # 设置facet标题栏背景颜色
+        panel.background = element_rect(fill = "gray90"), # 设置facet区域背景颜色
+        plot.title = element_text(size = 25, hjust = 0.5)) +
+  facet_grid(target ~ ., scales = "free", space = "free") +
+  guides(x = guide_axis(angle = 45))
+
+# 转换为交互式图表
+girafe(ggobj = p, width_svg = 25, height_svg = 15, options = list(
+  opts_sizing(rescale = TRUE)))
+```
+
+# **4 Addressing Mini-challenge 2- Step 2: Further Matching Using TransponderPing Data**
+
+**Objective**: For orders in Transaction_data that did not match any vessels in Step 1 (i.e., where probable vessels are marked as NA), use TransponderPing data to identify potential vessels.
+
+![](images/clipboard-1419241761.png)
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+suppressWarnings({
+merged_data_clean_NA<- merged_data_clean %>%
+  filter(is.na(source.harborreport )) %>%
+  select(date_added, source.transaction, target,source.harborreport)
+vessel_movement_dataNA <- vessel_movement_data %>%
+  mutate(time_date = as.Date(time))  %>%
+  select(source,target,time_date)%>%
+  distinct()
+merged_data_NAcheck <- merged_data_clean_NA %>%
+  left_join(vessel_movement_dataNA, 
+            by = c("date_added" = "time_date", "target" = "source"))%>%
+  rename(fishvessel=target.y)
+
+# Step 1: Identify many-to-many relationships
+# Count transactions per target and date_added in vessel_movement_data
+vessel_counts <- vessel_movement_dataNA %>%
+  group_by(source, time_date) %>%
+  tally(name = "vessel_counts")
+
+# Count harbor reports per target and date_added in merged_data_clean_NA
+NA_counts <- merged_data_clean_NA %>%
+  group_by(target, date_added) %>%
+  tally(name = "NA_counts")
+
+# Find rows where is greater than 1
+many_to_many <- vessel_counts %>%
+  inner_join(NA_counts, by = c("time_date"="date_added", "source" = "target")) %>%
+  filter(vessel_counts > 1 | NA_counts > 1) %>%
+  mutate(many_to_many = TRUE)
+
+# Step 2: Mark many-to-many relationships in vessel_movement_data
+vessel_movement_data_m <- vessel_movement_dataNA %>%
+  left_join(many_to_many %>% select(source, time_date, many_to_many), 
+            by = c("source", "time_date")) %>%
+  mutate(many_to_many = ifelse(is.na(many_to_many), FALSE, many_to_many))
+
+# Step 3: Merge vessel_movement_data with merged_data_clean_NA and retain many-to-many markings
+merged_data_NA_checkm <- merged_data_clean_NA %>%
+  left_join(vessel_movement_data_m, c("date_added" = "time_date", "target" = "source")) %>%
+  rename(fishvessel=target.y)
+
+# 计算每个组合对应的 source.harborreport 数量
+vessel_count <- merged_data_NA_checkm %>%
+  group_by(date_added, target) %>%
+  summarise(vessel_count = n_distinct(fishvessel), .groups = 'drop')
+
+# 更新 many_to_many 列，仅在满足条件时修改为 FALSE
+merged_data_NA_checkmclean <- merged_data_NA_checkm %>%
+  left_join(vessel_count, by = c("date_added", "target")) %>%
+  mutate(many_to_many = ifelse(many_to_many == TRUE & vessel_count == 1, FALSE, many_to_many))%>%
+  arrange(date_added,fishvessel)
+})
+```
+
+```{r}
+# View the final result
+head(merged_data_NA_checkmclean)
+```
+
+**Insight：**
+
+After completing the matching process using TransponderPing data, it was found that all instances where ProbableVessel was marked as NA corresponded to multiple possible vessels. The next step involves further scrutiny to determine which vessels among the multiple options are unlikely candidates.
+
+# **4 Addressing Mini-challenge 2- Step 3: Filtering Unlikely Vessels Using Vessel Movement Data**
+
+**Objective**: Utilize vessel_movement_data to determine the paths of vessels in observed period associated with each transaction. Filter out vessels from the list of potential candidates that are unlikely based on their historical movements.
+
+**Method：**
+
+1.  **Historical Path Analysis**:
+
+    Examine where all vessels associated with current records have traveled within the past 24 hours and will travel in the next 24 hours based on the current record time.
+
+2.  **Criteria for Identifying Vessels That Delivered Products**
+
+    A vessel that delivered products to a port is characterized by:
+
+    -   **Arrival Record**: The vessel has a documented arrival at the port.
+
+    -   **Previous and Next Port Records**: The vessel has records of arriving from a previous port and/or departing to another port after unloading.
+
+3.  **Identifying Unlikely Vessels**:
+
+    -   Exclude vessels that:
+
+        1.  Did not significantly change their geographical location within the observation time window (potentially docked at the current port).
+
+        2.  Showed frequent geographical movements, which may indicate tourism or sightseeing activities rather than cargo transport.
+
+![](images/clipboard-3980418323.png)
+
+## 4.1 Data prepare
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+suppressWarnings({
+
+
+merged_data_na_clean_many<- merged_data_NA_checkmclean %>%
+  select(date_added, source.transaction, target,fishvessel)
+
+merged_data_clean_many <- merged_data_clean %>%
+  filter(unmatch == "unmatch" & !is.na(source.harborreport)) %>%
+  select(date_added, source.transaction, target, source.harborreport) %>%
+  rename(fishvessel=source.harborreport)
+
+merged_union_data <- bind_rows(merged_data_clean_many, merged_data_na_clean_many)%>%
+  arrange(date_added,fishvessel)
+
+merged_union_datav<- merged_union_data %>%
+  select(date_added,target,fishvessel) %>%
+  distinct()
+
+
+# Step 2: Identify the earliest timestamp for each fishvessel in each target city on each date_added
+earliest_timestamp <- vessel_movement_data %>%
+  mutate(time_date = as.Date(time)) %>%
+  group_by(time_date, source, target) %>%
+  mutate(earliest_time = min(time),
+         is_earliest = time == min(time)) %>%
+  ungroup()%>%
+  select(time,source,target,time_date,is_earliest) %>%
+  rename(Portcity=source,vessel=target)%>%
+  filter(is_earliest==TRUE)
+
+merged_data_earliest <- earliest_timestamp %>%
+  right_join(merged_union_datav, 
+            by = c("time_date" = "date_added","vessel"="fishvessel", "Portcity" = "target"))%>%
+  select(time,Portcity,vessel)
+
+vessel_movemen_timestamp <- vessel_movement_data %>%
+  select(time,source,target) %>%
+  rename(Portcity=source,vessel=target)%>%
+  distinct()
+
+merged_data_earlcheck <- vessel_movemen_timestamp %>%
+  mutate(flag = ifelse(paste(time, Portcity, vessel) %in% paste(merged_data_earliest$time, merged_data_earliest$Portcity, merged_data_earliest$vessel), "Exist", "Not Exist"))%>%
+  arrange(vessel,time)
+})
+
+```
+
+```{r}
+# View the final result
+head(merged_data_earlcheck)
+```
+
+## 4.2 **Historical Path Analysis**:
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+calc_other_cities <- function(data) {
+  data %>%
+    group_by(vessel) %>%
+    mutate(
+      other_cities_past = sapply(1:n(), function(i) {
+        past_cities <- unique(Portcity[time >= time_range_start_past[i] & time <= time_range_end_past[i] & Portcity != Portcity[i]])
+        length(past_cities)
+      }),
+      other_cities_future = sapply(1:n(), function(i) {
+        future_cities <- unique(Portcity[time >= time_range_start_future[i] & time <= time_range_end_future[i] & Portcity != Portcity[i]])
+        length(future_cities)
+      })
+    ) %>%
+    ungroup()
+}
+
+merged_data_earlcheck1 <- merged_data_earlcheck %>%
+  mutate(
+    time = as.POSIXct(time),  # 将时间列转换为POSIXct格式
+    time_range_start_past = time - 24 * 60 * 60,  # 计算过去12小时的起始时间
+    time_range_end_past = time,  # 过去12小时的结束时间为当前时间
+    time_range_start_future = time,  # 未来12小时的起始时间为当前时间
+    time_range_end_future = time + 24 * 60 * 60  # 计算未来12小时的结束时间
+  )
+
+merged_data_earlcheck1 <- calc_other_cities(merged_data_earlcheck1)
+
+merged_data_earlcheckexi <- merged_data_earlcheck1%>%
+    filter(flag == "Exist")
+
+# Calculate proportion and count of each value in the other_cities_past column
+result <- data.frame(table(merged_data_earlcheckexi$other_cities_past))
+colnames(result) <- c("Number of Cities Visited in Past 24 Hours", "Count")
+result$Proportion <- prop.table(result$Count)
+
+# Convert proportion to percentage format
+result$Proportion <- paste0(round(result$Proportion * 100, 2), "%")
+
+# Sort by number of cities visited in past 24 hours
+result <- result[order(result$`Number of Cities Visited in Past 24 Hours`), ]
+
+# Print the result
+kable(result, align = "c")
+```
+
+Initially setting the historical and future durations to 24 hours resulted in mostly zero matches, indicating infrequent city round-trips within 24 hours. Now, with the observation period extended to 72 hours, we aim to gain a clearer understanding of vessel movements and their relevance to the transaction data.
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+merged_data_earlcheck2 <- merged_data_earlcheck %>%
+  mutate(
+    time = as.POSIXct(time),  # Convert the time column to POSIXct format
+    time_range_start_past = time - 72 * 60 * 60,  # Calculate the start time for the past 72 hours
+    time_range_end_past = time,  # End time for the past 72 hours is the current time
+    time_range_start_future = time,  # Start time for the future 72 hours is the current time
+    time_range_end_future = time + 72 * 60 * 60  # Calculate the end time for the future 72 hours
+  )
+
+merged_data_earlcheck2 <- calc_other_cities(merged_data_earlcheck2)
+
+merged_data_earlcheck2exi <- merged_data_earlcheck2 %>%
+    filter(flag == "Exist")
+
+# Calculate proportion and count of each value in the other_cities_past column
+result <- data.frame(table(merged_data_earlcheck2exi$other_cities_past))
+colnames(result) <- c("Number of Cities Visited in Past 72 Hours", "Count")
+result$Proportion <- prop.table(result$Count)
+
+# Convert proportion to percentage format
+result$Proportion <- paste0(round(result$Proportion * 100, 2), "%")
+
+# Sort by number of cities visited in past 72 hours
+result <- result[order(result$`Number of Cities Visited in Past 72 Hours`), ]
+
+# Print the result
+kable(result, align = "c")
+```
+
+## 4.3 **Identifying Unlikely Vessels**
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+# Create combined column
+merged_data_earlcheck2exi$combination <- paste(merged_data_earlcheck2exi$other_cities_past, merged_data_earlcheck2exi$other_cities_future, sep = ", ")
+
+# Calculate count and proportion for each combination
+result <- data.frame(table(merged_data_earlcheck2exi$combination))
+colnames(result) <- c("City Visits in Past and Future 72 Hours", "Count")
+result$Proportion <- prop.table(result$Count)
+
+# Convert proportion to percentage format
+result$Proportion <- paste0(round(result$Proportion * 100, 2), "%")
+
+# Sort by combination column
+result <- result[order(result$`City Visits in Past and Future 72 Hours`), ]
+
+# Print the result
+kable(result, align = "c")
+
+```
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+# Split the column "City Visits in Past and Future 72 Hours" into two columns
+result1 <- result %>%
+  separate(`City Visits in Past and Future 72 Hours`, c("past", "future"), sep = ", ")
+
+# Convert past and future columns to numeric type
+result1$past <- as.numeric(result1$past)
+result1$future <- as.numeric(result1$future)
+
+# Convert the proportion column to numeric type
+result1$Proportion <- as.numeric(gsub("%", "", result1$Proportion))
+
+# Normalize the proportion using min-max normalization
+result1$log_ratio <- log10(result1$Proportion)
+
+# Create a scatter plot
+ggplot(result1, aes(x = past, y = future, size = log_ratio, color = log_ratio)) +
+  geom_point(alpha = 0.7) +
+  scale_size(range = c(1, 10), labels = function(x) paste0(round(x * 100, 2), "%")) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        legend.position = "right") +
+  labs(title = "Trend of City Visits in Past and Future 72 Hours",
+       x = "Cities Visited in Past 72 Hours",
+       y = "Cities Visited in Future 72 Hours")
+```
+
+Based on the above definitions, we can exclude the following combinations:
+
+1.  **0,0**: This combination indicates that the vessel remained at the current port for both the past 3 days and the next 3 days, which does not align with the requirement of vessels transporting goods from other cities to the current port.
+
+2.  **Visits to more than 3 cities in the past 3 days or future 3 days**: These combinations can likely be excluded as vessels involved are probably engaged in tourism or sightseeing activities rather than cargo transport.
+
+The following combinations are considered for further review: (0, 1), (0, 2), (0, 3), (0, 4), (1, 1), (2, 1), (3, 1), (4, 1), (1, 2), (2, 2). These combinations indicate scenarios where vessels visited a limited number of cities, suggesting potential involvement in cargo transport rather than tourism or sightseeing activities. Each combination will be carefully assessed to determine their suitability regarding the transportation of goods from other cities to the current port
+
+## 4.4 Visualization to Associate Cargos with Probable Vessels
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+suppressWarnings({
+# 指定要保留的组合向量
+combinations_to_keep <- c("0, 1", "0, 2", "0, 3", "0, 4", "1, 1", "2, 1", "3, 1", "4, 1", "1, 2", "2, 2","1, 3")
+
+# 筛选出combination列等于指定组合的行
+merged_data_manytomany_match <- merged_data_earlcheck2exi %>%
+  filter(combination %in% combinations_to_keep)%>%
+  mutate(time_date = as.Date(time))%>%
+  select(Portcity,vessel,time_date)
+
+merged_data_finalcheck <- merged_data_clean %>%
+  left_join(merged_data_manytomany_match, 
+            by = c("date_added" = "time_date", "target" = "Portcity"))
+
+merged_data_finalcheck_modified <- merged_data_finalcheck %>%
+  mutate(Fishvessel = coalesce(vessel, source.harborreport))%>%
+  mutate(unmatch = if_else(is.na(Fishvessel), "unmatch", "match"))%>%
+  select(date_added,source.transaction,target,unmatch,Fishvessel)
+
+merged_data_finalcheck_modified <- merged_data_finalcheck_modified %>%
+  group_by(date_added, target) %>%
+  mutate(probable_vesselcount = n_distinct(Fishvessel)) %>%
+  ungroup()
+
+Transaction_matchresult2_visual<- merged_data_finalcheck_modified %>%
+  group_by(date_added, source.transaction, target) %>%
+  mutate(probable_vessel = case_when(
+           probable_vesselcount == 1 ~ Fishvessel,
+           is.na(Fishvessel) ~ NA_character_,
+           TRUE ~ paste(unique(Fishvessel), collapse = ", ")
+         )) %>%
+select(date_added, source.transaction, target,unmatch,probable_vessel,probable_vesselcount)%>%
+distinct()
+ 
+# 将date_added列转换为日期格式
+Transaction_matchresult1_visual$date_added <- ymd(Transaction_matchresult1_visual$date_added)
+
+# 提取季度信息
+Transaction_matchresult2_visual <- Transaction_matchresult2_visual %>%
+  mutate(quarter = paste0(year(date_added), "-Q", quarter(date_added)))
+
+# 创建交互式散点图
+p <- ggplot(Transaction_matchresult2_visual, aes(x = quarter, y = 0, fill = unmatch,
+                                                 data_id = source.transaction,
+                                                 tooltip = paste("Date:", date_added, "<br>",
+                                                                 "Source Transaction:", source.transaction, "<br>",
+                                                                 "Probable Vessel:", probable_vessel))) +
+  geom_point_interactive(size = 5, shape = 21, color = "white", 
+                         position = position_jitter(width = 0.4, height = 0.05)) +
+  scale_fill_manual(values = c("match" = "green", "unmatch" = "red")) +
+  labs(title = "Summary of Cargos Match across Date & Quantity",
+       x = "Transaction Quarter", y = NULL, fill = "Match Status") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 20),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.text = element_text(size = 20),
+        strip.text.y = element_text(size = 20, angle = 0),
+        legend.position = "top",
+        strip.background = element_rect(fill = "gray80", color = "gray50"), # 设置facet标题栏背景颜色
+        panel.background = element_rect(fill = "gray90"), # 设置facet区域背景颜色
+        plot.title = element_text(size = 25, hjust = 0.5)) +
+  facet_grid(target ~ ., scales = "free", space = "free") +
+  guides(x = guide_axis(angle = 45))
+
+# 转换为交互式图表
+girafe(ggobj = p, width_svg = 25, height_svg = 15, options = list(
+  opts_sizing(rescale = TRUE)))
+})
+```
+
+# 5.Analyzing and Visualizing Seasonality and Anomalies in Port Exit Records
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+suppressWarnings({
+data <- Transaction_matchresult2_visual
+data$month <- format(as.Date(data$date_added), "%m")
+monthly_counts <- table(data$month)
+P1 <- ggplot(data, aes(x=as.factor(month))) +
+  geom_bar(fill="steelblue") +
+  labs(title="Monthly Trend of Records", x="Month", y="Number of Records") +
+  theme_minimal()
+
+# 创建月份和港口维度的vessel计数数据框
+vessel_count_heatmap <- Transaction_matchresult2_visual %>%
+  mutate(month = format(as.Date(date_added), "%Y-%m")) %>%
+  group_by(month, target) %>%
+  summarise(vessel_count = n_distinct(probable_vessel), .groups = 'drop')
+# 将month转换为日期对象,并提取年和月
+vessel_count_heatmap$month <- as.Date(paste0(vessel_count_heatmap$month, "-01"))
+vessel_count_heatmap$year <- format(vessel_count_heatmap$month, "%Y")
+vessel_count_heatmap$month <- format(vessel_count_heatmap$month, "%m")
+# 绘制热力图
+P2 <- ggplot(vessel_count_heatmap, aes(x=month, y=target, fill=vessel_count, text=vessel_count)) +
+  geom_tile(color="white") +
+  scale_fill_viridis(option="A",direction=-1) +
+  facet_wrap(~year, nrow=1) +
+  theme_minimal() +
+  theme(axis.text.x=element_text(angle=45, hjust=1),
+        strip.background=element_blank(),
+        strip.text=element_text(size=12, face="bold"),
+        panel.grid=element_blank()) +
+  labs(title="Monthly Distribution of Vessel Count by Port",
+       x="Month", y="Port", fill="Vessel Count")
+grid.arrange(P1, P2)
+})
+```
+
+By combining the previous heatmap and the current chart of monthly total records, we can more comprehensively analyze the seasonal trends and anomalies in port exit records:
+
+Seasonal Trends:
+
+1.  Overall, the number of records exhibits a clear seasonal pattern. The volume reaches its peak in the middle of the year (June to September) and is lower at the beginning and end of the year (January to March and October to December). This aligns with the seasonal pattern observed in the heatmap for most ports, indicating that summer is the peak period for shipping and trade.
+
+2.  The upward and downward trends in the number of records are relatively smooth, suggesting that seasonal changes are gradual without sudden large fluctuations. May to June and September to October are the turning points, marking the gradual increase or decrease of activity over several months.
+
+Anomalies:
+
+1.  There is a notable spike in the number of records in February, breaking the overall smooth seasonal pattern. Combined with the heatmap, we see that this is primarily driven by the abnormally high vessel activity at the City of Paackland. This suggests that some special events may have occurred in February, leading to a surge in exports at that port.
+
+2.  The number of records in August shows a slight dip compared to the previous month and falls below the expected seasonal peak. The heatmap reveals that the City of South Paackland experienced a significant drop in vessel counts in August, which could be the main contributor to the overall decline. This indicates that the port may have faced some transportation disruptions in August.
+
+3.  Although the heatmap reveals anomalies for some individual ports (e.g., City of Lomark's lack of activity in the first half of the year), these anomalies do not significantly impact the overall monthly trend. This suggests that deviations in these specific ports may be offset by the normal seasonal patterns of other ports.
+
+Overall, while most ports and the entire network exhibit clear seasonality, the anomalous fluctuations of individual ports in certain months warrant attention and further investigation. Combining the observed port-specific anomalies from the heatmap with the overall trend helps better explain these deviations and identify their root causes (e.g., special events, trade disruptions), providing valuable insights for optimizing port operations.
