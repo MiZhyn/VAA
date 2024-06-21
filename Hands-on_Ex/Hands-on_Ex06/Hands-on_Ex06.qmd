@@ -1,8 +1,6 @@
 ---
-title: "Hands-on Exercise 8: Visualising Network Data"
-author: "Michael Djohan"
-date: 09 March 2023
-date-modified: "`r Sys.Date()`"
+title: "Hands-on Ex06"
+author: "Michelle Zhang"
 execute: 
   echo: true
   eval: true
@@ -282,9 +280,9 @@ GAStech_graph %>%
 
 *visNetwork()* function uses a nodes list and edges list to create an interactive graph.
 
--   The nodes list must include an \"id\" column, and the edge list must have \"from\" and \"to\" columns.
+-   The nodes list must include an "id" column, and the edge list must have "from" and "to" columns.
 
--   The function also plots the labels for the nodes, using the names of the actors from the \"label\" column in the node list.
+-   The function also plots the labels for the nodes, using the names of the actors from the "label" column in the node list.
 
 ### 6.1 Data preparation
 
@@ -303,6 +301,7 @@ GAStech_edges_aggregated <- GAStech_edges %>%
 ```
 
 ### 6.2 Plotting the interactive network graph
+
 ```{r}
 visNetwork(GAStech_nodes,
            GAStech_edges_aggregated) %>%
@@ -310,6 +309,7 @@ visNetwork(GAStech_nodes,
 ```
 
 ### 6.3 Working with visual attributes - Nodes
+
 visNetwork() looks for a field called “group” in the nodes object and colour the nodes according to the values of the group field.
 
 The code chunk below rename Department field to group.
@@ -331,9 +331,7 @@ visNetwork(GAStech_nodes,
 
 ### 6.4 Working with visual attributes - Edges
 
-In the code run below visEdges() is used to symbolise the edges.
-- The argument arrows is used to define where to place the arrow.
-- The smooth argument is used to plot the edges using a smooth curve.
+In the code run below visEdges() is used to symbolise the edges. - The argument arrows is used to define where to place the arrow. - The smooth argument is used to plot the edges using a smooth curve.
 
 ```{r}
 visNetwork(GAStech_nodes,
@@ -348,9 +346,7 @@ visNetwork(GAStech_nodes,
 
 ### 6.5 Adding interactivity
 
-In the code chunk below, visOptions() is used to incorporate interactivity features in the data visualisation.
-- The argument highlightNearest highlights nearest when clicking a node.
-- The argument nodesIdSelection adds an id node selection creating an HTML select element.
+In the code chunk below, visOptions() is used to incorporate interactivity features in the data visualisation. - The argument highlightNearest highlights nearest when clicking a node. - The argument nodesIdSelection adds an id node selection creating an HTML select element.
 
 ```{r}
 visNetwork(GAStech_nodes,
@@ -361,4 +357,3 @@ visNetwork(GAStech_nodes,
   visLegend() %>%
   visLayout(randomSeed = 123)
 ```
-
