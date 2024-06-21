@@ -1,15 +1,12 @@
 ---
 title: "Takehome_ex02"
 Publish: 4/25/2024
-title-block-banner: '#003049'
-title-block-banner-color: '#FDF0D5'
-format:
-  html:
-    theme: flatly
-    embed-resources: true
-    font-color: '#FDF0D5'
-    linestretch: 1.2
-    backgroundcolor: '#fefefe'
+execute: 
+  echo: true
+  eval: true
+  warning: false
+format: html
+editor: visual
 ---
 
 ```{css,echo = FALSE}

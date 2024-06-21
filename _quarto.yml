@@ -23,6 +23,11 @@ website:
           href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html"
         - text: "Hands-on Ex 8"
           href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html"
+        - text: "Hands-on Ex 9a"
+          href: "Hands-on_Ex/Hands-on_Ex09a/Hands-on_Ex08a.html"
+        - text: "Hands-on Ex 9b"
+          href: "Hands-on_Ex/Hands-on_Ex09b/Hands-on_Ex08b.html"
+          
       
     - text: "Take Home Excercise"
       menu: 
@@ -32,17 +37,28 @@ website:
           href: "Takehome_Ex/TakeHome Ex02/takehomeex02.html"
         - text: "Take Home Ex 3"
           href: "Takehome_Ex/TakeHome Ex03/Takehomeex03.html"
+    
+    - text: "In class Excercise"
+      menu: 
+        - text: "In Class Ex 1"
+          href: "InClass_Ex/In class2/In-class_Ex02.html"
           
     right: 
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: about.qmd
+        text: About
 
-format: 
+format:
   html:
-    theme: cosmo
-    css: styles.css
+    fontsize: 1.0em
+    css: bootstrap.css
     toc: true
+    toc-title: Table of Contents
+    toc-depth: 4
+    grid: 
+      sidebar-width: 200px
+      body-width: 850px
+      margin-width: 300px
 
 editor: visual
-
