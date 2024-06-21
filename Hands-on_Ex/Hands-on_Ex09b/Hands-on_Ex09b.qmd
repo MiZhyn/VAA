@@ -1,8 +1,6 @@
 ---
-title: "Hands-on Exercise 5: Visual Multivariate Analysis "
-author: "Michael Djohan"
-date: 08 February 2023
-date-modified: "`r Sys.Date()`"
+title: "Hands-on Ex09b"
+author: "Michelle Zhang"
 execute: 
   echo: true
   eval: true
