@@ -1,0 +1,850 @@
+---
+title: "Takehome_ex01"
+Publish: 4/25/2024
+title-block-banner: '#003049'
+title-block-banner-color: '#FDF0D5'
+format:
+  html:
+    theme: flatly
+    embed-resources: true
+    font-color: '#FDF0D5'
+    linestretch: 1.2
+    backgroundcolor: '#fefefe'
+---
+
+```{css,echo = FALSE}
+.output {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+```
+
+# 1 Introduction
+
+## 1.1 Background
+
+The housing market in Singapore comprises both public and private sectors. Public housing serves individuals with monthly household incomes up to S\$14,000, while those with higher incomes typically turn to the private residential market.
+
+## **1.2 Project Objectives**
+
+In this exercise, Exploratory Data Analysis (EDA) methods and ggplot functions are used to explore:
+
+-   the distribution of
+
+-   the relationship
+
+# 2.Getting started
+
+## 2.1 **Importing libraries**
+
+We load the following R packages using the `pacman::p_load()` function:
+
+```{r}
+#|eval=FALSE
+pacman::p_load(tidyverse, ggstatsplot, ggridges, plotly, dplyr,wesanderson,lubridate)
+
+```
+
+## 2.2 **loading data**
+
+The dataset used in the exercise is transaction data of [REALIS](https://www.ura.gov.sg/reis/index)
+
+We import this dataset by using `read.csv()` function
+
+```{r}
+#| code-overflow: wrap
+files1<-read.csv("data/ResidentialTransaction20240308160536.csv")
+files2<-read.csv("data/ResidentialTransaction20240308160736.csv")
+files3<-read.csv("data/ResidentialTransaction20240308161009.csv")
+files4<-read.csv("data/ResidentialTransaction20240308161109.csv")
+files5<-read.csv("data/ResidentialTransaction20240414220633.csv")
+```
+
+## 2.3 **Glimpse of data**
+
+Using the `glimpse()` function, we see the first 5 rows of five datasets (files1 to files5). These datasets likely contain private residential property transaction data, possibly segmented by different criteria such as date, type, and price. Further exploration is needed to understand the meaning of the fields, data types, presence of missing values, and how to integrate these datasets for analysis and visualization.
+
+```{r}
+#| class: output
+#| code-fold: true
+#| code-summary: "Show the code"
+head(files1,5)
+head(files2,5)
+head(files3,5)
+head(files4,5)
+head(files5,5)
+```
+
+### 2.3.1 Union Dataset
+
+::: panel-tabset
+### check columns
+
+This code checks if the column names of the five datasets are consistent.
+
+```{r}
+all_colnames <- c(names(files1), names(files2), names(files3), names(files4), names(files5))
+if(length(unique(all_colnames)) != length(names(files1))) {
+  stop("Column names are different, files need adjustment to have consistent column names.")
+}
+```
+
+### check data types
+
+This code checks if the data types of the five datasets are consistent.
+
+```{r}
+for(col in names(files1)) {
+  if(!all(sapply(list(files1, files2, files3, files4, files5), function(x) class(x[[col]]) == class(files1[[col]])))) {
+    stop("Data types are different, files need adjustment to have consistent data types.")
+  }
+}
+```
+
+### Union operation
+
+The five files can be merged successfully. They have consistent column names, data types, and equal row counts, making them compatible for union operation.
+
+```{r}
+uniondata <- rbind(files1, files2, files3, files4, files5)
+```
+:::
+
+### 2.3.2 Check Dataset
+
+::: panel-tabset
+## Check data structure
+
+Checking the structure of data using `str()`:
+
+```{R}
+str(uniondata)
+```
+
+## Check missing values
+
+using `is.na` we see there are no missing values in the data
+
+```{R}
+for(column_name in names(uniondata)){
+na_count<- sum(is.na(uniondata[[column_name]]))
+}
+na_count
+```
+
+## Check duplicates
+
+Using the `duplicated` function, we see that there are no duplicate entries in the data.
+
+```{r}
+uniondata[duplicated(uniondata),]
+```
+:::
+
+### 2.3.3 data set description
+
+| Field                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|------------|------------------------------------------------------------|
+| Project.Name                | The name of the housing project or development.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Transacted.Price            | The price at which the property was transacted.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Area (SQFT)                 | The area of the property in square feet.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Unit.Price (PSF)            | The price per square foot of the property.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Sale.Date                   | The date on which the property was sold.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Address                     | The address of the property.                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Type.of.Sale                | The type of sale, e.g., resale, new sale, sub sale.                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Type.of.Area                | The type of area, e.g., built-up area, land area.                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Area (SQM)                  | The area of the property in square meters. 1SQM=10.764SQFT                                                                                                                                                                                                                                                                                                                                                                                            |
+| Unit.Price (PSM)            | The price per square meter of the property.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Nett.Price                  | The final price after deductions or adjustments.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Property.Type               | The type of property, e.g., condominium, landed house, HDB flat.                                                                                                                                                                                                                                                                                                                                                                                      |
+| Number.of.Units             | The number of units in the housing development.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Tenure                      | The land tenure of the property, e.g., freehold, leasehold.                                                                                                                                                                                                                                                                                                                                                                                           |
+| Completion.Date             | The date when the property construction was completed.                                                                                                                                                                                                                                                                                                                                                                                                |
+| Purchaser.Address.Indicator | It refers to the type of residence (HDB flat or private property) of the purchaser's address as shown in the caveat, and is not indicative of whether the place of residence is owned by the purchaser. Where the information is not available, 'N.A' is indicated.                                                                                                                                                                                   |
+| Postal.Code                 | The postal code of the property.                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Postal.District             | The postal district of the property.                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Postal.Sector               | The postal sector of the property.                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Planning.Region             | Singapore is divided into 5 areas called planning regions to facilitate the planning of the use and development of land for the whole of Singapore. The 5 regions are Central Region, East Region, North East Region, North Region and West Region. Each Planning Region consists of several planning areas which are further divided into sub-zones. A Development Guide Plan (DGP) is prepared for each planning area (see Development Guide Plan). |
+| Planning.Area               | The planning area where the property is located.                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+### 2.3.4 Exploration of Dataset Features
+
+The following code snippet is used to explore categorical data features, including counting and identifying unique values for different features. This will help us better understand the structure and content of the dataset, providing a foundation for further exploration and analysis.
+
+```{r}
+#| code-fold: true
+#| code-summary: code
+library(dplyr)
+
+# Convert Type.of.Sale
+unique_type_of_sale <- unique(uniondata$Type.of.Sale)
+table_type_of_sale <- table(uniondata$Type.of.Sale)
+df_type_of_sale <- data.frame(Type_of_Sale = unique_type_of_sale, Count = as.vector(table_type_of_sale))
+
+# Convert Type.of.Area
+unique_type_of_area <- unique(uniondata$Type.of.Area)
+table_type_of_area <- table(uniondata$Type.of.Area)
+df_type_of_area <- data.frame(Type_of_Area = unique_type_of_area, Count = as.vector(table_type_of_area))
+
+# Convert Property.Type
+unique_property_type <- unique(uniondata$Property.Type)
+table_property_type <- table(uniondata$Property.Type)
+df_property_type <- data.frame(Property_Type = unique_property_type, Count = as.vector(table_property_type))
+
+# Convert Number.of.Units
+unique_number_of_units <- unique(uniondata$Number.of.Units)
+table_number_of_units <- table(uniondata$Number.of.Units)
+df_number_of_units <- data.frame(Number_of_Units = unique_number_of_units, Count = as.vector(table_number_of_units))
+
+# Convert Completion.Date
+unique_completion_date <- unique(uniondata$Completion.Date)
+table_completion_date <- table(uniondata$Completion.Date)
+df_completion_date <- data.frame(Completion_Date = unique_completion_date, Count = as.vector(table_completion_date))
+
+# Convert Purchaser.Address.Indicator
+unique_purchaser_address_indicator <- unique(uniondata$Purchaser.Address.Indicator)
+table_purchaser_address_indicator <- table(uniondata$Purchaser.Address.Indicator)
+df_purchaser_address_indicator <- data.frame(Purchaser_Address_Indicator = unique_purchaser_address_indicator, Count = as.vector(table_purchaser_address_indicator))
+
+# Convert Postal.District
+unique_postal_district <- unique(uniondata$Postal.District)
+table_postal_district <- table(uniondata$Postal.District)
+df_postal_district <- data.frame(Postal_District = unique_postal_district, Count = as.vector(table_postal_district))
+
+# Convert Postal.Sector
+unique_postal_sector <- unique(uniondata$Postal.Sector)
+table_postal_sector <- table(uniondata$Postal.Sector)
+df_postal_sector <- data.frame(Postal_Sector = unique_postal_sector, Count = as.vector(table_postal_sector))
+
+# Convert Planning.Region
+unique_planning_region <- unique(uniondata$Planning.Region)
+table_planning_region <- table(uniondata$Planning.Region)
+df_planning_region <- data.frame(Planning_Region = unique_planning_region, Count = as.vector(table_planning_region))
+
+# Convert Planning.Area
+unique_planning_area <- unique(uniondata$Planning.Area)
+table_planning_area <- table(uniondata$Planning.Area)
+df_planning_area <- data.frame(Planning_Area = unique_planning_area, Count = as.vector(table_planning_area))
+
+# Convert Planning.Area
+unique_Nett.Price <- unique(uniondata$Nett.Price)
+table_Nett.Price <- table(uniondata$Nett.Price)
+df_Nett.Price <- data.frame(Nett.Price = unique_Nett.Price, Count = as.vector(table_Nett.Price))
+```
+
+```{r}
+#| class: output
+df_type_of_sale
+df_type_of_area
+df_property_type
+df_number_of_units
+df_completion_date
+df_purchaser_address_indicator
+df_postal_district
+df_postal_sector
+df_planning_region
+df_planning_area
+df_Nett.Price
+```
+
+Before diving into detailed data exploration, it's essential to understand the key numerical variables in our dataset. The **`summary()`** function provides a concise summary of these variables, including measures of central tendency, dispersion, and distribution.
+
+```{r}
+#| class: output
+summary(uniondata$Transacted.Price....)
+summary(uniondata$Unit.Price....PSF.)
+summary(uniondata$Area..SQFT.)
+```
+
+::: callout-note
+Summary of the Dateset findings:
+
+1.  Upon examining the data's structure, missing values, and duplicates, it appears that the data is tidy and does not require further processing.
+
+2.  The information contained in the "Project.Name" and "Address" columns appears overly intricate and does not significantly contribute to the analysis. Therefore, these columns can be safely removed.
+
+3.  Both "SQM" and "SQFT" serve as units of measurement for area. It suffices to retain one of them for analysis purposes.
+
+4.  The "Tenure" information can be simplified by retaining only the duration in years and removing the specific date portion, facilitating clearer analysis.
+
+5.  Given considerations for visualization, the "Postal" information is redundant. It is suggested to eliminate the "Postal.Sector" column.
+
+6.  Anomalies such as the presence of values like 60 and 43 in the "Number of Units" column warrant further investigation to ascertain whether they are indeed outliers or erroneous entries.
+
+7.  Upon inspecting the "Nett.Price" column, it is observed that only 27 rows contain specific numerical values, while the rest are empty. Hence, this feature proves ineffective and can be safely discarded.
+
+This concise summary encapsulates the key findings of the EDA process, laying the groundwork for further analysis and decision-making.
+:::
+
+# 3 Data preparation
+
+## 3.1 Recast variable
+
+**Transacted.Price....,Transacted.Price....,Area..SQFT.** are of type `chr`,As they should be numeric, they will be cast as `num` class.
+
+```{r}
+# Remove commas and convert to numeric
+uniondata$Transacted.Price.... <- as.numeric(gsub(",", "", uniondata$Transacted.Price....))
+uniondata$Area..SQFT. <- as.numeric(gsub(",", "", uniondata$Area..SQFT.))
+uniondata$Unit.Price....PSF. <- as.numeric(gsub(",", "", uniondata$Unit.Price....PSF.))
+```
+
+## 3.2 Create new variables
+
+From the original Tenure column, extracting the numeric part, removing non-numeric characters, and classifying based on the extracted numeric values.
+
+```{r}
+uniondata <- uniondata %>%
+  mutate(
+    Tenure_cleaned = gsub("[^0-9]", "", Tenure),
+    Tenure_numeric = as.numeric(substr(Tenure_cleaned, 1, 3)),
+    Tenure_level = case_when(
+      grepl("Freehold", Tenure) ~ "Freehold",
+      Tenure_numeric < 200 ~ "< 200",
+      TRUE ~ "> 200"
+    )
+  )
+unique(uniondata$Tenure_level)
+```
+
+## 3.3 Segmenting Variables into Groups
+
+Creates boxplots with summary statistics, aiming to understand the distribution and characteristics of these variables visually.
+
+```{r}
+filter_area <- uniondata %>% 
+  filter(Area..SQFT. < 5000)
+
+library(ggplot2)
+library(patchwork)
+
+# Calculate summary statistics for Area..SQFT.
+mean_val <- mean(filter_area$`Area..SQFT.`)
+median_val <- median(filter_area$`Area..SQFT.`)
+q1_val <- quantile(filter_area$`Area..SQFT.`, 0.25)
+q3_val <- quantile(filter_area$`Area..SQFT.`, 0.75)
+
+# Create boxplot for Area..SQFT.
+p1 <- ggplot(filter_area, aes(x = "", y = `Area..SQFT.`)) +
+  geom_boxplot(fill = "#1a80bb") +  # Fill boxplot with color
+  stat_summary(fun = "mean", geom = "point", shape = 8,
+               size = 2, color = "#fefefe") +
+  annotate("text", x = 0.8, y = max(filter_area$`Area..SQFT.`), 
+           label = paste("Mean:", round(mean_val, 2), "\n",
+                         "Median:", round(median_val, 2), "\n",
+                         "Q1:", round(q1_val, 2), "\n",
+                         "Q3:", round(q3_val, 2)), 
+           vjust = 1, hjust = 0.5, size = 3) +
+  labs(y = "Area (SQFT)", x="",title = "Boxplot of Area (SQFT)") +
+  theme_minimal()+
+  theme( text = element_text(size = 8))
+
+# Calculate summary statistics for Unit.Price....PSF.
+mean_val_psf <- mean(uniondata$`Unit.Price....PSF.`)
+median_val_psf <- median(uniondata$`Unit.Price....PSF.`)
+q1_val_psf <- quantile(uniondata$`Unit.Price....PSF.`, 0.25)
+q3_val_psf <- quantile(uniondata$`Unit.Price....PSF.`, 0.75)
+
+# Create boxplot for Unit.Price....PSF.
+p2 <- ggplot(uniondata, aes(x = "", y = `Unit.Price....PSF.`)) +
+  geom_boxplot(fill = "#1a80bb") +  # Fill boxplot with color
+  stat_summary(fun = "mean", geom = "point", shape = 8,
+               size = 2, color = "#fefefe") +
+  annotate("text", x = 0.8, y = max(uniondata$`Unit.Price....PSF.`), 
+           label = paste("Mean:", round(mean_val_psf, 2), "\n",
+                         "Median:", round(median_val_psf, 2), "\n",
+                         "Q1:", round(q1_val_psf, 2), "\n",
+                         "Q3:", round(q3_val_psf, 2)), 
+           vjust = 1, hjust = 0.5, size = 3) +
+  labs(y = "Price (PSF)", x="", title = "Boxplot of Price (PSF)") +
+  theme_minimal()+
+  theme( text = element_text(size = 8))
+
+# Combine the plots
+(p1 + p2)
+
+```
+
+::: callout-note
+Based on the boxplot results, the Area and Price need to be grouped.
+
+They are divided into four groups: Small, Medium, Large, and plus, based on the first quartile (Q1), median, third quartile (Q3), and outliers (values beyond 1.5 times the interquartile range, IQR).
+
+These groupings help categorize the data into different size categories, providing insights into the distribution and variability of the Area and Price variables.
+:::
+
+```{r}
+# Grouping the Area variable
+uniondata$Area_Group <- cut(uniondata$`Area..SQFT.`, 
+                            breaks = c(-Inf, quantile(uniondata$`Area..SQFT.`, 0.25),
+                                       quantile(uniondata$`Area..SQFT.`, 0.5),
+                                       quantile(uniondata$`Area..SQFT.`, 0.75),
+                                       Inf),
+                            labels = c("Small", "Medium", "Large", "Plus"))
+
+# Grouping the Price variable
+uniondata$Price_Group <- cut(uniondata$`Unit.Price....PSF.`, 
+                             breaks = c(-Inf, quantile(uniondata$`Unit.Price....PSF.`, 0.25),
+                                        quantile(uniondata$`Unit.Price....PSF.`, 0.5),
+                                        quantile(uniondata$`Unit.Price....PSF.`, 0.75),
+                                        Inf),
+                             labels = c("Low", "Medium-Low", "Medium-High", "High"))
+```
+
+## 3.4 **Deciding on Plausible Values to Use**
+
+Through exploring the dataset in the previous step, removing irrelevant or redundant columns can facilitate the subsequent analysis. Additionally, the analysis of the dataset is limited to the first quarter of 2024.
+
+```{r}
+#| class: output
+
+uniondata$Sale.Date <- dmy(uniondata$Sale.Date)
+cols_to_exclude <- c("Project.Name", "Nett.Price...", "Address", "Area..SQM.","Unit.Price....PSM.","Postal.Code","Postal.Sector","Tenure_cleaned","Tenure_numeric","Tenure")
+
+data2024 <- uniondata %>%
+  select(-any_of(cols_to_exclude))
+head(data2024)
+str(data2024
+    )
+```
+
+# **4 Exploratory Data Analysis**
+
+## 4.1 EDA1 Real Estate Market Trend Analysis
+
+::: panel-tabset
+## The Plot
+
+```{r}
+#| echo: False
+# Group data by month and year, calculate average house price
+df_avg <- uniondata %>%
+  filter(Purchaser.Address.Indicator != "N.A") %>%
+  mutate(ym = format(Sale.Date, "%Y-%m")) %>%
+  group_by(ym,Purchaser.Address.Indicator) %>%
+  summarise(avg_price = mean(Transacted.Price....))
+
+# Plot 1
+plot1 <- ggplot(df_avg, aes(x = ym, y = avg_price, fill = Purchaser.Address.Indicator)) +
+  geom_col(position = position_dodge()) +
+  scale_fill_manual(values =c("#1a80bb", "#f2c45f"),name="Property type") +
+  geom_hline(yintercept = mean(df_avg$avg_price), color = "#4A5859", linetype = "dashed") +  
+  geom_text(aes(x = 1, y = mean(df_avg$avg_price), 
+                label = paste("Avg Price:", round(mean(df_avg$avg_price), 2))), 
+            color = "#4A5859", size = 3.2, hjust = -0.2, vjust = -0.5) + 
+  labs(x = "Month", y = "Price(PSF)", title = "Price (PSF) of HDB by Property type and Month") + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position = "none"
+        , text = element_text(size = 8))
+
+
+df_count <- uniondata %>%
+  mutate(Date = format(Sale.Date, "%Y-%m")) %>%
+  filter(Purchaser.Address.Indicator != "N.A") %>%
+  group_by(Date, Purchaser.Address.Indicator) %>%
+  summarise(Sales = n()) %>%
+  group_by(Date) %>%
+  mutate(Percentage = Sales / sum(Sales))
+
+# Plot 2
+plot2 <- ggplot(df_count, aes(x = Date, y = Sales, fill = Purchaser.Address.Indicator)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Percentage, accuracy = 1)), 
+            position = position_stack(vjust = 0.5), 
+            size = 3, 
+            color = "#4A5859") + 
+  scale_fill_manual(values = c("#1a80bb", "#f2c45f"),name="Property type") +
+  labs(x = "Month", y = "Sales", title = "Monthly Sales by Property type") +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position = c(0.8, 0.9),legend.title = element_blank(),legend.key.size = unit(0.4, 'cm'), 
+        legend.key.height = unit(0.4, 'cm'), 
+        legend.key.width = unit(0.4, 'cm'),text = element_text(size = 8)) 
+
+plot1/plot2
+```
+
+## The Code Chunck
+
+```{r}
+#| output: False
+library(tidyverse)
+
+# Group data by month and year, calculate average house price
+df_avg <- uniondata %>%
+  filter(Purchaser.Address.Indicator != "N.A") %>%
+  mutate(ym = format(Sale.Date, "%Y-%m")) %>%
+  group_by(ym, Purchaser.Address.Indicator) %>%
+  summarise(avg_price = mean(Transacted.Price....))
+
+# Plot 1
+plot1 <- ggplot(df_avg, aes(x = ym, y = avg_price, fill = Purchaser.Address.Indicator)) +
+  geom_col(position = position_dodge()) +
+  scale_fill_manual(values =  c("#082a54", "#f0c571"), name = "Property type") +
+  geom_hline(yintercept = mean(df_avg$avg_price), color = "red", linetype = "dashed") +  
+  geom_text(aes(x = 1, y = mean(df_avg$avg_price), 
+                label = paste("Avg Price:", round(mean(df_avg$avg_price), 2))), 
+                color = "red", size = 3, hjust = -0.2, vjust = -0.5) + 
+  labs(x = "Month", y = "Price(PSF)", title = "Price (PSF) of HDB by Property type and Month") + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none",
+        text = element_text(size = 8))
+
+
+# Count sales by month and property type
+df_count <- uniondata %>%
+  mutate(Date = format(Sale.Date, "%Y-%m")) %>%
+  filter(Purchaser.Address.Indicator != "N.A") %>%
+  group_by(Date, Purchaser.Address.Indicator) %>%
+  summarise(Sales = n()) %>%
+  group_by(Date) %>%
+  mutate(Percentage = Sales / sum(Sales))
+
+# Plot 2
+plot2 <- ggplot(df_count, aes(x = Date, y = Sales, fill = Purchaser.Address.Indicator)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Percentage, accuracy = 1)), 
+            position = position_stack(vjust = 0.5), 
+            size = 3, 
+            color = "#4A5859") + 
+  scale_fill_manual(values =  c("#1a80bb", "#f2c45f"), name = "Property type") +
+  labs(x = "Month", y = "Sales", title = "Monthly Sales by Property type") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.position = c(0.8, 0.9), legend.title = element_blank(), 
+        legend.key.size = unit(0.4, 'cm'), legend.key.height = unit(0.4, 'cm'), 
+        legend.key.width = unit(0.4, 'cm'), text = element_text(size = 8)) 
+
+# Combine plots
+  plot1 + plot2
+```
+:::
+
+::: callout-note
+Based on the provided charts, we ca analyze the recent price trends and sales situation in different types of properties as follow:
+
+**Price Trends:**
+
+-   Prices for public housing (HDB) have remained stable, averaging between 1700 to 1800 SGD per square foot monthly. In contrast, private real estate prices fluctuate more and are consistently higher than HDB prices.
+
+-   The long-term average price for HDB units is lower than the overall average, reflecting its affordability and welfare nature.
+
+-   Prices in the first quarter of 2024 have decreased compared to 2023, especially for private real estate.
+
+**Sales Situation:**
+
+-   Monthly sales volumes for both HDB and private real estate maintain a ratio of around 60% to 40%, showing stable market demand.
+
+-   The surge in HDB sales volume in 2023 has returned to normal levels in the first quarter of 2024.
+
+-   Despite fluctuations, HDB sales consistently account for around 60% of total sales, highlighting its importance in meeting housing needs.
+:::
+
+## 4.2 EDA2 Price Distribution of Housing in Five Regions of Singapore
+
+::: panel-tabset
+## The Plot
+
+```{r}
+#| echo: False
+library(ggplot2)
+library(ggridges)
+median_values <- data2024 %>%
+  group_by(Planning.Region) %>%
+  summarise(median_value = median(Unit.Price....PSF.))
+
+data2024 <- data2024 %>%
+  mutate(Planning.Region = recode(Planning.Region, 
+                                  "Central Region" = "Central",
+                                  "East Region" = "East",
+                                  "North Region"="North",
+                                  "North East Region"="North East",
+                                  "West Region"="West"
+                                  ))
+
+# Plot
+Plot1 <- ggplot(data2024, aes(Unit.Price....PSF., Planning.Region)) +
+  geom_density_ridges(aes(fill = Planning.Region), alpha = 0.2, quantile_lines = TRUE, quantile_fun = function(x, ...) median(x)) +
+  geom_text(data = median_values, aes(x = median_value-200, y = Planning.Region, label = paste("Median Value:", round(median_value, 2))),
+            hjust = -0.2, vjust = -0.5, color = "black", size = 3) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(size = 8),
+        plot.title = element_text(size = 12, face = "bold"),legend.title = element_blank(),legend.key.size = unit(0.4, 'cm'), 
+        legend.key.height = unit(0.4, 'cm'), 
+        legend.key.width = unit(0.4, 'cm')) +
+  labs(x = "Price(PSF)", y = "Region", title = "Unit Price Distribution by Region")
+
+
+
+Plot2<- data2024 %>% 
+  filter(Purchaser.Address.Indicator!="N.A") %>% 
+  ggplot(aes(Planning.Region,Unit.Price....PSF.,fill=Purchaser.Address.Indicator))+
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="bottom",text = element_text(size = 8),legend.title = element_blank())+
+  scale_fill_manual(values = c("#1a80bb", "#f2c45f"))
+  labs(x = "Region", y = "Price(PSF)")
+
+Plot1+Plot2
+```
+
+## The Code Chunck
+
+```{r}
+#| output: False
+library(ggplot2)
+library(ggridges)
+
+# Calculate median values
+median_values <- data2024 %>%
+  group_by(Planning.Region) %>%
+  summarise(median_value = median(Unit.Price....PSF.))
+
+# Recode Planning.Region
+data2024 <- data2024 %>%
+  mutate(Planning.Region = recode(Planning.Region, 
+                                  "Central Region" = "Central",
+                                  "East Region" = "East",
+                                  "North Region" = "North",
+                                  "North East Region" = "North East",
+                                  "West Region" = "West"
+                                  ))
+
+# Plot 1
+Plot1 <- ggplot(data2024, aes(Unit.Price....PSF., Planning.Region)) +
+  geom_density_ridges(aes(fill = Planning.Region), alpha = 0.2, quantile_lines = TRUE, quantile_fun = function(x, ...) median(x)) +
+  geom_text(data = median_values, aes(x = median_value - 200, y = Planning.Region, label = paste("Median Value:", round(median_value, 2))),
+            hjust = -0.2, vjust = -0.5, color = "black", size = 3) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        text = element_text(size = 8),
+        plot.title = element_text(size = 12, face = "bold"),
+        legend.title = element_blank(),
+        legend.key.size = unit(0.4, 'cm'), 
+        legend.key.height = unit(0.4, 'cm'), 
+        legend.key.width = unit(0.4, 'cm')) +
+  labs(x = "Price(PSF)", y = "Region", title = "Unit Price Distribution by Region")
+
+# Plot 2
+Plot2 <- data2024 %>% 
+  filter(Purchaser.Address.Indicator != "N.A") %>% 
+  ggplot(aes(Planning.Region, Unit.Price....PSF., fill = Purchaser.Address.Indicator)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "bottom",
+        text = element_text(size = 8),
+        legend.title = element_blank()) +
+  labs(x = "Region", y = "Price(PSF)")
+
+# Combine plots
+Plot1 + Plot2
+
+```
+:::
+
+::: callout-note
+Based on the chart, we can analyze the price distribution of housing in the five regions of Singapore and different types of properties as follows:
+
+-   The median price in the Central region is the highest at \$2,224 per square foot, while the West region has the lowest median price at \$1,529 per square foot. This may reflect the high-end positioning and high demand for properties in the city center.
+
+-   The price distribution follows a normal distribution curve, but the peak and spread of each region's distribution vary. The curves for the Central and West regions are steeper, indicating that prices are more concentrated in these areas, while those for the Northeast, North, and East regions are flatter, indicating greater price variation.
+
+-   The box plots show significant price variations within each region, especially in the Northeast and West regions, where the price dispersion is the highest.
+
+-   Private properties generally have higher prices than public housing (HDB), especially in the West and North regions, where the price gap between the two types of properties is significant. This aligns with the independent ownership and higher positioning of private properties.
+
+-   Even within the same region, there are significant price differences between private properties and HDB flats, reflecting the diverse nature of the Singapore real estate market.
+:::
+
+## **4.3 EDA3 Comparison of Unit Price and Area for Different Property Types in Singapore**
+
+::: panel-tabset
+## The Plot
+
+```{r}
+#| echo: False
+df_Typeprice <- uniondata %>%
+  filter(Purchaser.Address.Indicator !="N.A") %>% 
+  group_by(Purchaser.Address.Indicator, Property.Type) %>%
+  summarise(Price = median(Unit.Price....PSF.),Area=median( Area..SQFT.))
+# Loading required packages
+
+library(tidyverse)
+library(scales)
+library(ggrepel)
+
+# Plot
+# Plot
+ggplot(df_Typeprice, aes(x = Area, y = Price)) +
+  geom_point(aes(size = Price, color = Purchaser.Address.Indicator), alpha = 0.7) +
+  geom_text_repel(aes(label = Property.Type), size = 2.5) +
+  scale_color_manual(values = c("#1a80bb", "#f2c45f"), name = "Property Type") +  # Change legend title
+  labs(title = "Comparison of Area and Unit Price by Property Type", x = "Area", y = "Price (PSF)") +  # Change axis labels
+  theme(text = element_text(size = 10), 
+        plot.title = element_text(size = 12, face = "bold"),
+        legend.key.size = unit(0.5, 'cm'), 
+        legend.key.height = unit(0.5, 'cm'), 
+        legend.key.width = unit(0.5, 'cm'),
+        legend.title = element_text(size = 8))  
+```
+
+## The Code Chunk
+
+```{r}
+#| output: False
+df_Typeprice <- uniondata %>%
+  filter(Purchaser.Address.Indicator !="N.A") %>% 
+  group_by(Purchaser.Address.Indicator, Property.Type) %>%
+  summarise(Price = median(Unit.Price....PSF.),Area=median( Area..SQFT.))
+# Loading required packages
+
+library(tidyverse)
+library(scales)
+library(ggrepel)
+
+# Plot
+# Plot
+ggplot(df_Typeprice, aes(x = Area, y = Price)) +
+  geom_point(aes(size = Price, color = Purchaser.Address.Indicator), alpha = 0.6) +
+  geom_text_repel(aes(label = Property.Type), size = 2.5) +
+  scale_color_manual(values = c("#C83E4D", "#4A5859"), name = "Property Type") +  # Change legend title
+  labs(title = "Comparison of Area and Unit Price by Property Type", x = "Area", y = "Price (PSF)") +  # Change axis labels
+  theme(text = element_text(size = 10), 
+        plot.title = element_text(size = 12, face = "bold"),
+        legend.key.size = unit(0.5, 'cm'), 
+        legend.key.height = unit(0.5, 'cm'), 
+        legend.key.width = unit(0.5, 'cm'),
+        legend.title = element_text(size = 8))  
+```
+:::
+
+::: callout-note
+Based on the chart data, we can can analyze the unit area prices and sizes for different types of properties as follows:
+
+1.  Private properties have higher prices than public housing (HDB), reflecting their nature and market positioning.
+
+2.  There are significant price differences among different types of private properties, with detached houses being the highest priced and condominiums being relatively lower.
+
+3.  Public housing (HDB) shows less variation in prices across different types, reflecting uniform price control and affordability.
+
+4.  Detached and semi-detached houses generally have larger sizes, while apartments and condominiums have smaller sizes.
+
+5.  Executive condominiums have the lowest unit area prices among different types of apartments, likely due to their mixed characteristics of private apartments and affordable housing.
+:::
+
+## 4.4 EDA4 Regional Deviation in Unit Prices Across Singapore
+
+::: panel-tabset
+## The Plot
+
+```{r}
+#| echo: False
+df_Aavg <- uniondata %>%
+  filter(Purchaser.Address.Indicator=="Private") %>%
+  group_by(Planning.Area) %>%
+  summarise(avg_Aprice = mean(Unit.Price....PSF.))
+df_Aavg$p_z<- round((df_Aavg$avg_Aprice-mean(df_Aavg$avg_Aprice))/sd(df_Aavg$avg_Aprice),2)
+df_Aavg$p_ztype<- ifelse(df_Aavg$p_z<0,"below","above")
+df_Aavg<-df_Aavg[order(df_Aavg$p_z),]
+
+df_Aavg$Planning.Area<-factor(df_Aavg$Planning.Area,levels=df_Aavg$Planning.Area)
+
+plot11<-ggplot(df_Aavg,aes(x=Planning.Area,y=p_z,label=p_z))+geom_bar(stat="identity",aes(fill=p_ztype),position = position_dodge2(width = 2), width = 0.8)+
+  scale_fill_manual(name="Avergae Price",labels=c("Above Average","Below Average"),values=c("above"="#298c8c","below"="#C83E4D"))+
+  labs(title = "Unit Price Deviations by Area",y="",subtitle = "Private")+
+  coord_flip()+
+   theme(legend.position="None",text = element_text(size = 8),plot.title = element_text(size = 12, face = "bold")) 
+
+df_AHavg <- uniondata %>%
+  filter(Purchaser.Address.Indicator=="HDB") %>%
+  group_by(Planning.Area) %>%
+  summarise(avg_Aprice = mean(Unit.Price....PSF.))
+df_AHavg$p_z<- round((df_AHavg$avg_Aprice-mean(df_AHavg$avg_Aprice))/sd(df_AHavg$avg_Aprice),2)
+df_AHavg$p_ztype<- ifelse(df_AHavg$p_z<0,"below","above")
+df_AHavg<-df_AHavg[order(df_AHavg$p_z),]
+
+df_AHavg$Planning.Area<-factor(df_AHavg$Planning.Area,levels=df_AHavg$Planning.Area)
+
+plot22<-ggplot(df_AHavg,aes(x=Planning.Area,y=p_z,label=p_z))+geom_bar(stat="identity",aes(fill=p_ztype),position = position_dodge2(width = 2), width = 0.8)+
+  scale_fill_manual(name="Avergae Price",labels=c("Above Average","Below Average"),values=c("above"="#298c8c","below"="#C83E4D"))+
+  labs(y="",x="",subtitle = "HDB")+
+  coord_flip()+
+   theme(text = element_text(size = 8),
+         legend.title = element_blank(),
+         legend.position = c(0.25, 0.9),
+         legend.key.size = unit(0.4, 'cm'), 
+        legend.key.height = unit(0.4, 'cm'), 
+        legend.key.width = unit(0.4, 'cm'),
+        )
+
+plot11+plot22
+```
+
+## The Code Chunk
+
+```{r}
+#| output: False
+library(ggplot2)
+
+# Private
+df_Aavg <- uniondata %>%
+  filter(Purchaser.Address.Indicator == "Private") %>%
+  group_by(Planning.Area) %>%
+  summarise(avg_Aprice = mean(Unit.Price....PSF.))
+
+df_Aavg$p_z <- round((df_Aavg$avg_Aprice - mean(df_Aavg$avg_Aprice)) / sd(df_Aavg$avg_Aprice), 2)
+df_Aavg$p_ztype <- ifelse(df_Aavg$p_z < 0, "below", "above")
+df_Aavg <- df_Aavg[order(df_Aavg$p_z), ]
+
+df_Aavg$Planning.Area <- factor(df_Aavg$Planning.Area, levels = df_Aavg$Planning.Area)
+
+plot11 <- ggplot(df_Aavg, aes(x = Planning.Area, y = p_z, label = p_z)) +
+  geom_bar(stat = "identity", aes(fill = p_ztype), position = position_dodge2(width = 2), width = 0.8) +
+  scale_fill_manual(name = "Average Price", labels = c("Above Average", "Below Average"), values = c("below" = "#C83E4D", "above" = "#4A5859")) +
+  labs(title = "Unit Price Deviations by Area", y = "", subtitle = "Private") +
+  coord_flip() +
+  theme(legend.position = "None", text = element_text(size = 8), plot.title = element_text(size = 12, face = "bold"))
+
+# HDB
+df_AHavg <- uniondata %>%
+  filter(Purchaser.Address.Indicator == "HDB") %>%
+  group_by(Planning.Area) %>%
+  summarise(avg_Aprice = mean(Unit.Price....PSF.))
+
+df_AHavg$p_z <- round((df_AHavg$avg_Aprice - mean(df_AHavg$avg_Aprice)) / sd(df_AHavg$avg_Aprice), 2)
+df_AHavg$p_ztype <- ifelse(df_AHavg$p_z < 0, "below", "above")
+df_AHavg <- df_AHavg[order(df_AHavg$p_z), ]
+
+df_AHavg$Planning.Area <- factor(df_AHavg$Planning.Area, levels = df_AHavg$Planning.Area)
+
+plot22 <- ggplot(df_AHavg, aes(x = Planning.Area, y = p_z, label = p_z)) +
+  geom_bar(stat = "identity", aes(fill = p_ztype), position = position_dodge2(width = 2), width = 0.8) +
+  scale_fill_manual(name = "Average Price", labels = c("Above Average", "Below Average"), values = c("below" = "#C83E4D", "above" = "#4A5859")) +
+  labs(y = "", x = "", subtitle = "HDB") +
+  coord_flip() +
+  theme(text = element_text(size = 8),
+        legend.title = element_blank(),
+        legend.position = c(0.25, 0.9),
+        legend.key.size = unit(0.4, 'cm'),
+        legend.key.height = unit(0.4, 'cm'),
+        legend.key.width = unit(0.4, 'cm'))
+
+plot11 + plot22
+
+```
+:::
+
+::: callout-note
+Based on this chart, we can analyze the deviation of unit housing prices in different regions of Singapore:
+
+**Private Properties:**
+
+-   Private property prices in Chinatown, Newton, and Orchard Road areas are significantly higher than the average, with the highest deviations. These areas have prime locations, which may be the primary reason.
+
+-   Suburban areas such as Bukit Panjang, Serangoon, Balestier, and Bedok have private property prices below the average.
+
+**HDB Flats:**
+
+-   HDB flat prices in River Valley, Chinatown, and Newton areas are higher than the average, as these areas are close to the city center, which may be the main influencing factor.
+
+-   Suburban areas such as Balestier, Serangoon, Bedok, and Choa Chu Kang have HDB flat prices generally below the average.
+:::
