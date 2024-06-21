@@ -1,8 +1,6 @@
 ---
-title: "Hands-on Exercise 6: Time-Series Visualisation"
-author: "Michael Djohan"
-date: 16 February 2023
-date-modified: "`r Sys.Date()`"
+title: "Hands-on Ex07"
+author: "Michelle Zhang"
 execute: 
   echo: true
   eval: true
