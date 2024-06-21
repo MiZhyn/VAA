@@ -22,11 +22,11 @@ website:
         - text: "Hands-on Ex 7"
           href: "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html"
         - text: "Hands-on Ex 8"
-          href: "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html"
+          href: "Hands-on_Ex/Hands-on_Ex08new/Hands-on_Ex08.html"
         - text: "Hands-on Ex 9a"
-          href: "Hands-on_Ex/Hands-on_Ex09a/Hands-on_Ex08a.html"
+          href: "Hands-on_Ex/Hands-on_Ex09a/Hands-on_Ex09a.html"
         - text: "Hands-on Ex 9b"
-          href: "Hands-on_Ex/Hands-on_Ex09b/Hands-on_Ex08b.html"
+          href: "Hands-on_Ex/Hands-on_Ex09b/Hands-on_Ex09b.html"
           
       
     - text: "Take Home Excercise"
