@@ -1,0 +1,98 @@
+---
+title: "Hands-on Ex05"
+author: "Michelle Zhang"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+format: html
+editor: visual
+---
+
+## 1. Plotting Ternary Diagram with R
+
+### Install and launching R packages.
+
+The code chunk below uses p_load() of pacman package to check if packages are installed in the computer. If they are, then they will be launched into R. The R packages installed are:
+
+-   [**ggtern**](http://www.ggtern.com/), a ggplot extension specially designed to plot ternary diagrams. The package will be used to plot static ternary plots.
+-   [**Plotly R**](https://plot.ly/r/), an R package for creating interactive web-based graphs via plotly's JavaScript graphing library, plotly.js . The **plotly R** libary contains the *ggplotly* function, which will convert **ggplot2** figures into a Plotly object.
+
+```{r}
+pacman::p_load(ggtern, plotly, tidyverse)
+```
+
+### Importing the data
+
+```{r}
+pop_data <- read_csv("data/respopagsex2000to2018_tidy.csv") 
+```
+
+### Preparing the data
+
+```{r}
+agpop_mutated <- pop_data %>%
+  mutate(`Year` = as.character(Year))%>%
+  spread(AG, Population) %>%
+  mutate(YOUNG = rowSums(.[4:8]))%>%
+  mutate(ACTIVE = rowSums(.[9:16]))  %>%
+  mutate(OLD = rowSums(.[17:21])) %>%
+  mutate(TOTAL = rowSums(.[22:24])) %>%
+  filter(Year == 2018)%>%
+  filter(TOTAL > 0)
+
+agpop_mutated
+```
+
+### Static Ternary Diagram
+
+```{r}
+ggtern(data = agpop_mutated,
+       aes(x = YOUNG,
+           y = ACTIVE,
+           z = OLD)) +
+  geom_point() +
+  labs(title = "Population structure, 2015") +
+  theme_rgbw()
+```
+
+### Interactive Ternary Diagram
+
+```{r}
+label <- function(txt) {
+  list(
+    text = txt, 
+    x = 0.1, y = 1,
+    ax = 0, ay = 0,
+    xref = "paper", yref = "paper", 
+    align = "center",
+    font = list(family = "serif", size = 15, color = "white"),
+    bgcolor = "#b3b3b3", bordercolor = "black", borderwidth = 2
+  )
+}
+
+axis <- function(txt) {
+  list(
+    title = txt, tickformat = ".0%", tickfont = list(size = 10)
+  )
+}
+
+ternaryAxes <- list(
+  aaxis = axis("Young"), 
+  baxis = axis("Active"), 
+  caxis = axis("Old")
+)
+
+plot_ly(
+  data = agpop_mutated, 
+  a = ~YOUNG, 
+  b = ~ACTIVE, 
+  c = ~OLD, 
+  color = I("black"), 
+  type = "scatterternary"
+) |> 
+  layout(
+    annotations = label("Ternary Markers"), 
+    ternary = ternaryAxes
+  )
+```
