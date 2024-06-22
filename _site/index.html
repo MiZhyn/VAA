@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISSS608-VAA - VAA</title>
+<title>ISSS608-VAA - ISSS608 Visual Analytics and Applications Homepage</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -64,15 +30,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -93,9 +60,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
 
-<link rel="stylesheet" href="bootstrap.css">
+    const options = {
+      valueNames: ['listing-title','listing-author','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      page: 3,
+    pagination: { item: "<li class='page-item'><a class='page page-link' href='#'></a></li>" },
+      searchColumns: ["listing-title","listing-author","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="ThemeL.css">
 </head>
 
 <body class="nav-fixed">
@@ -149,15 +148,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Hands-on Ex 7</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html" rel="" target="">
+    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex08new/Hands-on_Ex08.html" rel="" target="">
  <span class="dropdown-text">Hands-on Ex 8</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex09a/Hands-on_Ex08a.html" rel="" target="">
+    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex09a/Hands-on_Ex09a.html" rel="" target="">
  <span class="dropdown-text">Hands-on Ex 9a</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex09b/Hands-on_Ex08b.html" rel="" target="">
+    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex09b/Hands-on_Ex09b.html" rel="" target="">
  <span class="dropdown-text">Hands-on Ex 9b</span></a>
   </li>  
     </ul>
@@ -214,40 +213,281 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of Contents</h2>
+  <ul>
+  <li><a href="#welcome-to-a-world-where-data-speaks-and-insights-shine" id="toc-welcome-to-a-world-where-data-speaks-and-insights-shine" class="nav-link active" data-scroll-target="#welcome-to-a-world-where-data-speaks-and-insights-shine">Welcome to a World Where Data Speaks and Insights Shine</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-about-jolla">
+  <img src="Images/About.gif" class="about-image
+  rectangle " style="width: 50em;">
+ <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">VAA</h1>
+<h1 class="title">ISSS608 Visual Analytics and Applications Homepage</h1>
 </div>
-
-
-
 <div class="quarto-title-meta">
-
-    
-  
-    
   </div>
-  
+</header><main class="content" id="quarto-document-content">
 
-</header>
+<section id="welcome-to-a-world-where-data-speaks-and-insights-shine" class="level2">
+<h2 data-anchor-id="welcome-to-a-world-where-data-speaks-and-insights-shine">Welcome to a World Where Data Speaks and Insights Shine</h2>
+<p>Hello World! This is my Visual Analytics and Applications page, where I present my coursework and projects for this module.</p>
+<p>Dive into my work as I combine theory with practical applications. Each project is an opportunity to learn, experiment, and push the boundaries of what data analytics can achieve.</p>
+<p><strong>A Feature of My Latest Works:</strong></p>
 
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+
+</section>
+<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-file-modified-sort="1718990008250" data-listing-reading-time-sort="7">
+<a href="./InClass_Ex/In class2/In-class_Ex02.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img src="InClass_Ex\In class2\In-class_Ex02_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+In-class Exercise 2
+</h5>
+<div class="card-text listing-description">
+The ridgeline plot below is plotted by using <code>geom_density_ridges()</code>.
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
 </div>
 </div>
-
-
-
-</main> <!-- /main -->
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-listing-file-modified-sort="1718961823847" data-listing-reading-time-sort="9">
+<a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img src="Hands-on_Ex\Hands-on_Ex01\Hands-on_Ex01_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex01
+</h5>
+<div class="card-text listing-description">
+The code chunk below use p_load() of pacman package to check if tidyverse package are installed in the computer
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="2" data-listing-file-modified-sort="1718961809556" data-listing-reading-time-sort="7">
+<a href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img src="Hands-on_Ex\Hands-on_Ex02\Hands-on_Ex02_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex02
+</h5>
+<div class="card-text listing-description">
+In this chapter, I will practice several ggplot2 extensions to create more elegant and effective statistical graphics.
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="3" data-listing-file-modified-sort="1718961787995" data-listing-reading-time-sort="20">
+<a href="./Hands-on_Ex/Hands-on_Ex03/Handonex03.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands_on Ex03
+</h5>
+<div class="card-text listing-description">
+In this section, I will excerise how to create interactive data visualisation by using functions provided by&nbsp;<strong>ggiraph</strong>&nbsp;and&nbsp;<strong>plotlyr</strong>&nbsp;packag…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="4" data-listing-file-modified-sort="1718961800168" data-listing-reading-time-sort="6">
+<a href="./Hands-on_Ex/Hands-on_Ex03/Handsonex03b.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex03\Handsonex03b_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands_on Ex03b
+</h5>
+<div class="card-text listing-description">
+In this hands-on exercise, I will show how to create animated data visualisation by using&nbsp;<strong>gganimate</strong>&nbsp;and&nbsp;<strong>plotly r</strong>&nbsp;packages. At the same time, I will also show how to (i)…<strong></strong><strong></strong>
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="5" data-listing-file-modified-sort="1718961777302" data-listing-reading-time-sort="14">
+<a href="./Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex04\Hands-on_Ex04_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands_on Ex04
+</h5>
+<div class="card-text listing-description">
+The code chunk below uses p_load() of pacman…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michell Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="6" data-listing-file-modified-sort="1718954658102" data-listing-reading-time-sort="12">
+<a href="./Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex06\Hands-on_Ex06_files\figure-html\unnamed-chunk-8-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex06
+</h5>
+<div class="card-text listing-description">
+The code chunk below uses p_load() of pacman…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="7" data-listing-file-modified-sort="1718956661044" data-listing-reading-time-sort="7">
+<a href="./Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex07\Hands-on_Ex07_files\figure-html\unnamed-chunk-7-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex07
+</h5>
+<div class="card-text listing-description">
+The code chunk below uses p_load() of pacman…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="8" data-listing-file-modified-sort="1718960593440" data-listing-reading-time-sort="20">
+<a href="./Hands-on_Ex/Hands-on_Ex08new/Hands-on_Ex08.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex08new\Hands-on_Ex08_files\figure-html\unnamed-chunk-8-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex08
+</h5>
+<div class="card-text listing-description">
+The code chunk below uses p_load() of pacman…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="9" data-listing-file-modified-sort="1718961463972" data-listing-reading-time-sort="2">
+<a href="./Hands-on_Ex/Hands-on_Ex09a/Hands-on_Ex09a.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex09a\Hands-on_Ex09a_files\figure-html\unnamed-chunk-4-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex09
+</h5>
+<div class="card-text listing-description">
+The code chunk below uses p_load() of pacman…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="10" data-listing-file-modified-sort="1718961498261" data-listing-reading-time-sort="16">
+<a href="./Hands-on_Ex/Hands-on_Ex09b/Hands-on_Ex09b.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Hands-on_Ex\Hands-on_Ex09b\Hands-on_Ex09b_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-on Ex09b
+</h5>
+<div class="card-text listing-description">
+The code chunk below uses p_load() of pacman…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+Michelle Zhang
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="11" data-listing-file-modified-sort="1718962310356" data-listing-reading-time-sort="69">
+<a href="./Takehome_Ex/TakeHome Ex01/Takehomeex01.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top"><img data-src="Takehome_Ex\TakeHome Ex01\data:image\png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAABfVBMVEUAAAAAADUAADoAAF4AAGYANYQAOjoAOmYAOpAAXqgAZmYAZrYagLszMzM1AAA1NV41hMk6AAA6AGY6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kJA6kLY6kNtNTU1NTW5NTY5NbqtNjsheNQBeqOtmAABmADpmOgBmOjpmOpBmZgBmZjpmZmZmZpBmkJBmkLZmkNtmtttmtv9uTU1uTW5uTY5ubm5uq+SENQCEyeuOTU2OyP+QOgCQOjqQZjqQZmaQZpCQkGaQkLaQtpCQtraQttuQ27aQ29uQ2\+oXgCoyeuo6+urbk2rjk2r5P+2ZgC2Zjq2kDq2kGa2kJC2tpC2tra2ttu225C229u22\+2\7a2\9u2\Ijk3I\8jI\JhDXJqITJ6+vbkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2\b\7bb\9vb\kq27k\rqF7ryYTr68nr6+v+\v7\tmb\yI7\25D\27b\29v\5Kv\7b\8j\9v\+T\+4E+soAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dj2Mcd3rX8UEEy+Aa2LN9dhslZzAKxJdc7ILB9rlcOZcAqeWkd9dzuRBAlXNJqHwUey3Zymb\duY7v3ZmZ1c7z7Pz1fNo5\1qI+9qf2jb+Xw\O78nmQIAVBLrDwAA5xUFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEpnWKAnt5Lc1rXH0ldufdr+7fGz5a94vpv+mfpr9pPkkuyP1v\8xcPsDz66kn76a48Pq0cmzz9If3PhevlJJg+TmXd+N04a7qTvpP4Q6J9VIqu\m2xd\22H9132GdJYLnqrZk7nMkkG+2VRoKkbwle2YzV5mhbSMuMiLLNnP2zeF9nL\nr6B8uolh\mYFT+qqjQVQWafrDlHxpnzSqR9b\b\MOSAs1i2X6r+ZzOFygZ7NXZFmg+5d58nsim4aJYVe+2yF7yTnNm4Gi0vavNzTh5N3\PrY+\m2azEsWnSedqt8PX\Juno+LvpWF9t\X6o9Hs008eqmscvbNK5OyZb54K\BMHsv2W83ntJVJMtgniwINE\ni4anPnX+lOK5ziyn7yaV92d+sFHk7GpV\L01k9u7pTMWfFO94vJu\+coCTV\EApQbVomsP1P4hytFLFtv1cppO5NksEc2BTqWLU+vXaDhyY0eE9jP81f7yPnNskczaWzDs1YX6OSh7lMgAqtE1p8p\MOVIpatt1qU07lMksEe2Rbo5IsrSXLh48PsV\l03g8LIqFzjsNa9+yhKq61p+9lq3RqoWw9Vk9z+HuzIJ3ceue\p8s72582XjUNa99H2dr3+qcu01YLZt6IzeTvLwnrdK5Aw7xw9\+XISqrRNZb72iUbdgpElm+b1grVK5Ynwtp8bsilq23auV0QSbJYH9MF+FDIoPt32W\C1M+fdKlbNL\YjR7qIhV\enzcW0\Vi\Q7Pt\v4xWGtd\U2yRrH+AMFLa6\XHxSJWOo95qRHh5lxuvuTUoUCzlMMFq0S2ZhurRBbvezSqNvlM50Javezi4cK3auV0QSbJYH9MNiIVq7vTSbv1ONuWHcIQpnwZ2hCg2kN5rJpPby4wNR+bX4TPn1utHQpbLv\kcPLb7FWfTKe\3y0\wI3DLPj1wtsr4xcGwbVfflf7i\Vc5nc7FGj6FDaCOmGVyNoz8xVBVSLz903vbj+bHt8q12HWQloqY9l6q\mcLsokGeyPzW5MIRHhGzNvlqLZwqLSOA\yUblZO38oj1Xz6c24zr3VXIHOrbTM5ylqr8rfa382rzl751nWyt1Div3r5td4ZX+yvstIldq5la+tDVywYpXI2TO\eZgUjVlGs7Z2KH+LZkgLVSxbbzWf04WZJIO9sdoPtPGtvFd+1f6TW3mJFdtkyofyWDWf3ozr3Fs1AzLbbF5F8d367+dWCjXeub61IF9FWqwHUxeodm8A9M4qkY2dN4udkcoZytr7Zm+4OKRVLFtvNZ3L6cJMksHeWCzCT57vFm1TTND9KqTV13bZOdlDWVzmnj7\hdx4q0XrJ2cxLV86e4tyjdJ08u2vQvru1F7baL\J8yycreEyK9BVi\Dqza7onVUiZ613Idtlc\bSufedLgxp\eO03qr481VOF2aSDPbGZiNSVmn1aOTTc6\8jpyt5S7WsadxmXv63Hxi862aBbo\+wrOIlgr0Ep41fGj8t7snRdELWwduKNeB0p4\bBKZGuHp2aBzr9RI6TNz3favlN5TinQuGwKNMtTK65hYaNcDdljXBvHst2ZLi3Q43D36o9\+fvRggKt\7l8qUq5FZ7w+mGVyIgF2s4pBRqVYYG2Fpj2q9U0vS4wzTYKFevq24vwxWeqbyaoXlwdUfxu7ZmXaiF8k\djvuBEl4\rBK5okCXLMLX1RfhGw+3c0qBRmVYoPPr2cN6+mJfzVmH9bDKvnawXLVnX\bSZrSqNxwnjRmAIql7s8xV3+yXins3Dk9uLV3fxEYkt6wSuaJAqyc3S735giUFujCnrTcgg70xXAfa3tPjYllER8Xec8VT1tpppNrCOS0PLqleWu1av5\6bJWF+0vUttB+aDasyVsup08HSVbV6pFvpUFyi4kbhglcmWBFjOIeXIbIS1fsGA3ptn\Ic2cLsokGeyNSYE+z9PY3Nd4XJzvLfwMWz+3n2UP5cvcC3dbruXilN2Wx7X94tOn1Ze10hvhVZOnxVahsAj\zW7SPogpmJ17qTze5KD4zXH1EnakP1eMErmyQNPXhh3pH5bLS7OQVsr3ay\hz+eUHemjMtoPNK+U6mi3Z9X6ybzi0s75sLHZvHng3LNpsWlowYFz2WrMelwbp7vZTxor6ctXZRErjp9L\qSRuNnOI39bnf3zRvGbo\Ll4Q8\nnIo5zljlMiVBVpGcetO\Y0a0Vp0KGdhLqccyhmVSYFeLU+M0DjfQnnSjnR6h84Jp\Defly8snXqhvSXP0\q1dh4rBbX5nxBdnRe\fC38Kqt4qwNxx\ktxuVWzt1zZsvriazZ2eefxDSevWjX+1mH4aTiZwrNonsUKDZeqHkWv1kIo3YLT6ZSKmZU04mEpXPayJpTz0XQ7e0TQ6uLFjXv+B5nErsXPKUyMwaJUgGe0SBrtLvCbw5me355CmRmTViSQZ7RIGu1GfeuJzCOeUqkRl1LMlgnyjQ1fb6+zDjRTv1wT9ficxoY0kG+0SBrlZe1riPd2Lh6XzylciMMpZksFc+CxQAzgEKFACUKFAAUKJAAUCJAgUAJQoUAJQoUABQokABQIkCBQAlChQAlChQAFCiQAFAiQIFACUK1NDLl9afAKghkGIUqCHy2qvXOzs7N1fcwGkIpBgFaoi89un1T\4wfXv3ZmjLB9Pv7y+8gVMRSDEK1BB57dH39++lP1+8\9UPn4WmfP3ek\YN20\oH4EUo0ANkdceVf349u69\Gf7RvMVL4HVTo8dBWqIAu3Ri\f\x\1sRefbuw+m2Qxp+0bzFdYjE+fC6bGjQA1RoD16sZPOgoaF9bDCM9TlzfYN44\oHoEUo0ANkdcevdgJM5jpgjwFqkYgxShQQ+S1Ry+ydaBpV3ZehMc8AilGgRoirz16PSvQfJPRghu2n9A\AilGgRoirz3KW\I1uzGtgUCKUaCGyGufXrz\1fSHz+6xI70egRSjQA2R116F4zXvlTc4lFOBQIpRoIbIK1whkGIUqCHyClcIpBgFaoi8whUCKUaBGiKvcIVAilGghsgrXCGQYhSoIfIKVwikGAVqiLzCFQIpRoEaIq9whUCKUaCGyCtcIZBiFKgh8gpXCKQYBWqIvMIVAilGgRoir3CFQIpRoIbIK1whkGIUqCHyClcIpBgFaoi8whUCKUaBGiKvcIVAilGghsgrXCGQYhSoIfIKVwikGAVqiLzCFQIppi\Q7+\vFBea4RI0OpdT1p8BqBBIOX2BVleJ5SKIOpcvE1g4QiAV9AUariIbcBluncuXCSwcIZAa+gL9spjDfHv3Xv6zfaOPD7ipLl8msHCEQKqoC\SHz\5dfhnut3cfTMMa0XvtG40XvETdLK\Wn8SZ9fIMLQpURV2g2TrOsLAeVnhmd9s3Gi+wHpjOUKBLrJdnaFGgKmvuxvT6vSddCxQN5BWuEEiVdQt050HXRfgzM77w4z8\LG5P\urDH\1O\U4nty4tuvP8gyTZuv6suLOb3vn4sP6yyaNRkhSPn9xKMu+0PgVxHYoYgTxOM7g0Y43czj2+NJAUqEofBZpvMlpwo4fPpzBO43FndrtdXZ3tJZcW3HmaJ3Dr03BnP7+zXfsjRUTzv3s0okCHLkIgi1jlGWxlrJHbuceXBpICVVEXaN6PL97\yt1uTOPkwqgM0N6FkTqvk71kFsTZnXGy9Uk6B\Awi+DRKLuz22zai8\C4xcPs2dfmn\fHHkdjP4DOXl4SsYauZ3OP04g+7XGVvhsI9I9fzvSj5Pt3SKkJ7f++JY2r2HZvArb7E6a3Tv5W4d\95J3w52j2qgobp\cymYPiie0kdfB6D+Qp2WskdtM43EC2a81FuG\3NnJthZ5O5RznFz8vFhkGm\9RZHX47Be8lq53jKsQLqQrbjcS+4cXCnWJqWzk59W75Ium984KINYu3NSDoB6Ek9qo2K\eNF+eHzysPaWDeR1MPoP5Lj+Zd7MWCO30\xZtceXB5J1SiobeDKRNK+\LxaZ9t75m1v1NT9bWYyLlZhZyvaSq9UqoWZetx\PFncadwr1Aj0aXTyc\b4YK+H5J7cu\mp3NlBqKNDB6D+QjTnQZsbaUW08vjyQHMqpspkF+ncPi4BdyucN0+XtG4fTyedZLMfJ1uP0wYNsFXxYX3Q4PRhVa\mb77R85VGx+JSpv7z6is9KtVxl3357CnQw+g9ktQ403G1nrBnVxuPLAznlZCIam1mgh\tZQNKfeV4bi9XFrGO+\LOXr4dfvGbotALdr+6mkc8GQK5ZoOMkDJQ3j5LWghMFOhgRAjnJZ1pv5NuQ5jPWjGrj8eWBDDiMQWxDCzSL0CT92s\y2iy14M3Xv9hN8rxmWdtfuG3ylAIdVwmc\PzqKNn6WflA7W+lf7l83\Z4oEAHI0Igj3bzveee1Z46y1gzqo3HlwcyoEDFNrRAs5gejS5Ni7wmpfD1f7w7W4wpgiQt0PFoq74M9Hy2xNUeG+Vnar43BToY\QcyXRAPawCeNuYjZxlbvKtSI4PtQAYUqNiGFmi2KScsNmV5LY++yPMaVgNtXfvotw\1Bbo\vwQ0y+PiAj1q7f1HgQ5G\4Es5x8be8zPMra4QBsZbAcyoEDFNrVA0wyFBaYyr40dOcJa+tkqJ0WBPm2tQaq1ZWMr\ILHCxToYPQeyGVf0qfPgS55ch0FKrapBZrm9K9Hl6bVEtNsgbsMb2NPeEmBTvaqIzerN67lcb+YOwj\Vo+3I02BDkbvgWwU6IKMNdLWePyUQAYUqNimFmiasQ9DVsqNnnm\5Wuj8vSNk9oWUEmB7iX1nT4vNf6dzu2jt9c8fKmGAh2M\gPZWIRvZ6zZjo3HlwcyoEDFNrVAwxEZ+Q53xW53F58V+2vmS0yTzxNlge4njSWh1tr89P23q+OU88ePd9ur7CnQweg\kPnOSEXs2hlr7Qc6e3x5IAMKVGxjCzRNSvinOMhyXOw\fGOanxwndfHz\Ot7ltfGgR\5O7ULtLb+\9LszbbynZSz1x\Xz8ZUnK3pndaRHxToYEQIZBGr8rlzGZttrM9e33h8aSADClRsYws0\V4P6TppHHqc7+8eTrdw4ZNy46iwQMdVf+b3j2cnBy1ff\woffB68Q2fPX6j\XVPgQ5GjEB+E46eLw\InM\YXIE2H18WyIACFdvAAj0fKFB4QxrlKFAjFCicIY4KFKgRChS+kEcNCtQIBQpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyClcIpAoFaoS8whUCqUKBGiGv8IU8alCgRihQOEMcFShQIxQovCGNchSoEQoU7nAyETEK1AgFCncoUDEK1AgFCncoUDEK1AgFCncoULFNLNDxhR\eXnC2MlfffijBddvzZ4WTjtbXgKui+xUtB8fLrgzCWfHvd44yffz2YmW556co0CHKFY0p+FMzeXVjuqXnJ9Ono6yszVnGqFcgAIV28gCTcMzu75WsugC2PlDspQe5LHMr8jZuHNSv4hH7mlxqY9PW08uUKBDFCmawexycfUCLa4vk106pBnKRShQsc0s0Auj8tIHexdGp6a0u3BNm2fhQl7lBW6qO+E6ndVl5Mr33kq\9NNfhT\efHKBAh2iONGcZtfabr4mv5xHfoXDyedZaTZCuRAFKraZBbq9W2Tk5NYf3+oppeXVjPfyq8PW7jQuZJwprxpbXuq79uQSBTpEcaKZX1Wp8ZriCkzj6tqGl+ZCuRAFKraZBXrx8yIj462\aFzEq1j9czBKv4zry0lh5VBy4eN8dvLOwZVijWbtql7VlbTHtSyWy1rlBY\LZa7yymHZJcKaTy5RoEMUJZrZpTZvHDQKdL+8kN2sKxuhXIwCFdvQAv19saC0987f5LE5Gs0uP5wmKLg9S+nT2nU295Kr1RqkRoEWN49GFw8bd6o5ywXzDXmB1p9cokCHKEo006duP26mr5jLPFk4j0uB9mhDC\TvHhZL1ZfyDKWBunEY1gWFO9m6oGKlUZbS9Bfh+rIH2Zqi8PvDMCPQXM5ZXqCLCzKTLdVToChFiWb51rUCLRaKQuLCPOv249oTa6ua5lGgYhtaoIf7WcjSn3lKG0vZ+TdwunhzqfGLYoFnr9wwNPc1XWzlzB+v3zmlQPeLGYfaK0sU6BDFiWbx1rMCLTsyTeSjfAa29or9pStYSaPcphZoFqdJ+mWfpbTRcWW69hv7irz5+he7SZ7SS9WjdemSVphTeJotQdXv1N58boFpnO8x0nhliQIdojjRLN76Uu12\lUd9prKozeb6Rwv3Y2JOCpsaoFm4TwaXZoWKa3tHFeuGKqtqT\eLR69U32\t1O6nz\lo2w+s3Zn6RzoeJSv12q+skCBDlGkaFavydU2WxYlvFc9WIWyhTxqbGqBZlt2wsJSlsliT\c8peWM4iylYTX+1rWPfvvw9JSGfUWuPStqcnZnWYHuz77qG6\MUaBDFCua00aBVotC1ZamKnr7K+Y\CaTQxhZomqewmFSmtBab1td8WOUU4jVZndLp3Mr67M7irfBPW1FlN6bBixjNWrqqm7UmzW+0Q1khkCobW6BpFv867DBSLifV94ebW9FU\qLc7f30Am2sws\ulCur6sfeTfaaR262XklehyhiNGsFWgWtWjjKV4ouCmWFQKpsbIGm2fkwhK7c1FmuVc8WoZqbOsuU5muMlqW0qMd8qahxp30kUnOLe+PJJfI6RHGiWbx1+duqNus7gLw7ndsNZB6BVNnYAg1bbvLd7Iqd7S4+mxa70B2NwsLR06S5nDT5PDk1pfmRxM9HxSFytTv5AceNY+H361FtPLlEXocoTjSLty5\W9t9Pn2\68\KrfD7p\UngdTZ3AINp\A4rNI0HtXOSrM\d7jHOH\s4uf5Gs1ZShszjcUxIXkIG3eOa2djyl5S2zJwaf7JBfI6RJGimb91WaD1jZXj2WFOc6GcRyBVNrdAi9MpnDQOOC6OyDi40jzgOGwlv\BJfSlqUUrDMR3lmRWbd47D7srXs9RmLxknzaw2npwjr0MUK5rTeoGO61\VswPt50M5h0CqbGKBngvkFb6QRw0K1AgFCmeIowIFaoQChTekUY4CNUKBwhniqECBGqFA4Qt51KBAjVCgcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa\whTxqUKBGKFA4QxwVKFAjFCi8IY1yFKgRChTucFljMQrUCAUKdyhQMQrUCAUKb0ijHAVqhAKFM8RRYVgF+vyDUZJcuPFd7Vcnt1pnl21cqjt7VZJsXX922ktmvzoOT\74lEsnFChQ1HRL5vwD4WzLVdhC8pJaTOcvs70KedQYUoGe7Ja92Liu5qoCLS7IMTsB+IKXVL86yJ+8\OKHJQoUla7JnHtgvx62o9FcTCcPT70G0jwCqTKgAj25lWx9cphff+NG8bvJ3uLrG2Tyqybkl4Q7fpgUV+pa8JLZr8LVbrKLeK2MLnlFSZTMetiyZO5md0NdNq9suJ9QoPENqEBnF3Udj4prcYdFoKUFml+5prxud35l7oUvqf2q\Bt7tYt9L0ZeUZIksxG24nLZ4au9dW3tMEdKgUY3nAItEpYpLvCafkffOJh9nTcv0lU8qbpGbB7X+kuq51W\Ktu2doWvZcgrCpJkLshfntDxXALTGx+J1oESSJXhFOh+bf1S8T29v\24qrpWgZaznKWiQGsvKd949qvJw+JNVq+\J68oSJK5IH951ubnQPeSS2xEOgODKdDqqzmzV2V26bzi\vz3fBXjBS+hQKElTmbzgYN8qb9aB3qpeM7FQ2GBshuTxmAKtFaA0\qX\rKYNp\f6NPlBVptIN1bufqJAkVOmszGA3tJspVfUX6S7y1y47B6T2mBsiO9woAK9J3arkWzOlwW03GzAse1\UNOKdCjUUhwyPI7K3ZkokCRkyaz\sDk51dHydbPws2jfFeo7WxH0Gw+VlygHMopN6ACFX3PN5erpuPR1uzuKQVa7pq3ev09BYrcWnOgqefZMnz11R3eLN8URYGegbMr0Je2\t+\T\7l7N5\Sf55cev\Jv940dP\p\+w\82u\c\k3\wH2b3Frxk9qv\9S+S5J\917\p\of5\+eWYF2uXTD8iZBdKLNdeBFgtL5evCSqRisxMFegYGMwe6aFtnsCSmjV8\TRrrQ0+bAz39XWuYA0VBlsz2A6EoG5sv96sj6VauSWqiQMWGU6Dl3nZPb3xX7m0XLInpbEYgHPrRPDKzQ4Hu1Y\JW4gCRUGWzPYunxSooeEUaLFlPBw2d3s0W2haHNMqj9MFW9RPKdD98uCQ+b3yWyhQlCTJrD2wV\+3vghfYBH+DAyoQE928yOOD0b1czYsjmlty+h+a4+kUwo0P3D++WjlDCgFiookmbUHGtuNxkntzrR4nAKNbkAFOp08qpZsin3npvU01mcaZ9lL5wtK8\uX1F5Shb04ddPq5FKgqAiSWXsglGb2kmymtVxunzUwBXoGhlSg0+k3j9Lv+K1rv3w0q7jFMR3XHhcV6PTgSpJc+GT1R6FAUdM5mdN62I7rZ6r9JpwP9Jr+fKBTClRhWAVaOf5g5TJ2ZBQoFjFNJgUqNtACtUeBwh0KVIwCNUKBwhvSKEeBGqFA4QxxVKBAjVCg8IU8alCgRihQuEIgVShQI+QVrhBIFQrUCHmFKwRShQI1Ql7hCoFUoUCNkFe4QiBVKFAj5BWuEEgVCtQIeYUrBFKFAjVCXuEKgVShQI2QV3PWV3\yZRZI60\izOkhokCNUKBwhUCqDKdAn38wSpILN76r7u8mydbHi0+YeHLrUvWq2hkXs9Mv1l4ye1pu8nQ0OxloeHJy\dl0CfKKps4BbWSycacRwEk4xejyALaQR42hFOjJbtI8Y3dxAu\thRfd2ps7wXx+RtuD+ZfsNS+6cFycvP5GuHM0qr1yAQoUdd0D2shk404jgMWlFARXlSOOCgMp0HDBrnDVmeNHVb+Fixcd7y667sxkL2lc4uj4YRbDtBIvPgtXnSnO8z17WvGyh8l2+vjnWZrTO+mT01cuOyk4BYqa7gFtZLJxpxHAcKW6UwO4AGmUG0iBzq6sOc6ve7hXXj6z\Q0dFp2aF45N031n9h57+S9nTyuMi2\7\fDb4o1rl\meQ4GipnNAG5lsBlQWwEU4obLYMAq0HsPGVTbzq282rjqTLjrdOMibsbo2Z0hzdRnu\JI0taflqsdrT5r7ZR0FipnuAW1kcnFAi3dpXGi7GwpUbBgFWk9R4zs5v+5Ws0C3H7euKJvns3hS\prW02pXQp4yBwoRSUALe\VmbLRp8Zv6131HFKjYIAq0+d1cS97BaPEM4lzqskjPFWjraeHX4ZKc24+LP5mvgloWXwoUFXFA52o2u9MI4IK0dkCBig2iQJvzgdW3\V79KtwNcwWaLw6V29z3WheezaRJfVTbjDrJt4\eWJZeChQVcUBni+izO40AUqBnZCAFWl+4KaM3+fnVUbL1s0UvGM9tHcrCeDQKdRiKsXy3xtPGeV2mj+fPzndL2V62Hx4Fioo4oGUm63caAawVqGBHJgpUbCAFuvALPvV88SJSsxlHW3eKF2Y+WrwIPy734NvLZwfqbboABYqKPKBlJmt3GgFkDvSMDKJAl65iCqlblK96M+7POjDsuXTt2dJ1oPXI7tXbdBEKFBVpQPeTxm4j+Z1GACnQMzKIAl2+kXNJvmrN2J6HnD04V6DFslK4sTq\FChmZAFtZLK60wggW+HPyDAKtMzW0xvf5bvZVV\5Kwp0stc+lm42gzBu7gdaBDnMM1CgkJAEtJHJ2p1GAKtKZj\QuIZRoMWW83C83O3yQI9yk\qiL+iqGfdqC1D75bEh1dd\89t99pbvTlmEh4ggoPVMNu40AsiRSGdjIAV6spsfanwwSsoaPG0jT9mMjYNC8uOOn49mX+nNAk3f8vqz8i3HCRuR0F33gDYy2bjTCGB+YLzsWHgKVG4gBTqdPCpPdlPsWjcu7oRv+9aBHuPyUM7qReF+ceabWSLLAi1ePx7N3rLcZL90AYoCRV3XgDYyORfQRgCPxWdjokAVhlKg0+k34fSIW9d++aiowOPZiRSXFeg4aeRzGo7zKM+2WHta9frj8CeuFXt+fhPOB3qN84Gio24BbWRyPqCNAIYTOyXXBfOfFKjCcAq0cvyBYLV6NBQolrALKAUqNsAC9YEChTsUqBgFaoQChTsUqBgFaoQChTsUqBgFaoQChTsUqBgFaoQChTekUY4CNUKBwhniqECBGqFA4Qt51KBAjVCgcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa\whTxqUKBGKFA4QxwVKFAjFCi8IY1yFKgRChTucCinGAVqhAKFOxSoGAVqhAKFOxSoGAVqhAKFOxSoGAVqhAKFOxSoGAVqhAKFOxSoGAVqhAKFN6RRjgI1QoHCGeKoQIEaoUDhC3nUoECNUKBwhUCqUKBGyCtcIZAqFKgR8gpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyCl\IowYFaoQChTPEUYECNUKBwhvSKEeBGqFA4Q4nExGjQI1QoPCGNMqtV6Bf\uQP6c\XOzs7N6cLb2AZChTOEEeFtQr09U4o0Nc7D6bf37+56AaWokDhCz4vHk4AACAASURBVHnUWKdAv78fCvSHz0JTvn7vSftGPx9xM1GgcIVAqqxToC9+8pdpgb69ey+9nf5s32g8+yXqZnm1\iTOrBFIrIECVVmjQN\+6ZMvswJ9MA1zo\faNxpPtx6YzlCgS6yTZuhRoCr6Av3hs3vZRqSwwjPU5c32jb4+5CYir3CFQKroC\RFWp4UqBp5hSsEUkVdoOkCfL4bU9dFeDSQV7hCIFXUBfpiJ\Pek3KT0YP2jd4+5QYir3CFQKqsvyM9uzGpkFe4QiBVejgSiR3pNcgrXCGQKhzKaYS8whUCqcLJRIyQV7hCIFUoUCPkFa4QSBUK1Ah5hSsEUoUCNUJe4QqBVKFAjZBXuEIgVShQI+QVrhBIFQrUCHmFKwRShQI1Ql7hCoFUoUCNkFe4QiBVKFAj5BWuEEgVCtQIeYUv5FGDAjVCgcIX8qhBgRqhQOEKgVShQI2QV7hCIFUoUCPkFa4QSBUK1Ah5hSsEUoUCNUJe4QqBVKFAjZBXuEIgVShQI+QVrhBIFQrUCHmFKwRShQI1Ql7hCoFUoUCNkFe4QiBVKFAj5BWuEEgVCtQIeYUrBFKFAjVCXuEKgVShQI2QV7hCIFUoUCPkFa4QSBUK1Ah5hSsEUoUCNUJe4QqBVKFAjZBXuEIgVShQI+QVrhBIFQrUCHmFKwRShQI1Ql7hC3nUoECNUKBwhjgqUKBGKFA4QxwVKFAjFCh8IY8aFKgRChSuEEgVCtQIeYUrBFKFAjVCXuEKgVShQI2QV7hCIFUoUCPkFb6QRw0K1AgFCmeIowIFaoQChTekUY4CNUKBwhniqECBGqFA4Qt51KBAjVCgcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa9whUCqUKBGyCtcIZAqFKgR8gpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyClcIpAoFaoS8whfyqEGBGqFA4QxxVKBAjVCg8IU8alCgRihQuEIgVShQI+Q1hi9\8of05+udnZ2b04U3sAyBVKFAjZDXCF7vhAJ9vfNg+v39m4tuYCkCqUKBGiGv\fv+fijQHz4LTfn6vSftG8afzzUCqUKBGiGv\Xvxk79MC\Tt3Xvp7fRn+4bx53ONQKpQoEbIa+\e\umTL7MCfTANc6P32jeaz3+JmlkgrT+JM6eHjgI1QoH27YfP7mUbkcIKz1CXN9s3mi+wHpm+UKBLnJ46CtQIBdq3F2l5igoUdQRShQI1Ql57li7A57sxdV6ERx2BVKFAjZDXnr3Yybz3pNxk9KB9w\gjukYgVShQI+Q1hi\ZjUmLQKpQoEbIawxfsiO9FoFUObsCtd6Y5gwbPZdYK2QcyqlGgaowB2qEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyClcIpAoFaoS8whUCqUKBGiGvcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa9whUCqUKBGyCtcIZAqFKgR8gpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyClcIpAoFaoS8whUCqUKBGiGvcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa9whUCqUKBGyCtcIZAqFKgR8gpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyClcIpAoFaoS8whUCqUKBGiGvcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa9whUCqUKBGyCtcIZAqFKgR8gpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK1whkCoUqBHyClcIpAoFaoS8whUCqUKBGiGvcIVAqlCgRsgrXCGQKhSoEfIKVwikCgVqhLzCFQKpQoEaIa9whUCqUKBGyCtcIZAqFKgR8gpXCKQKBWqEvMIVAqlCgRohr3CFQKpQoEbIK3whjxoUqBEKFM4QRwUK1AgFCm9IoxwFaoQChTuEUYwCNUKBwh3CKEaBGqFA4Q5hFKNAjVCgcIcwilGgRihQuEMYxShQIxQo3CGMYhSoEQoU7hBGMQrUCAUKdwijGAVqhAKFO4RRjAI1QoHCHcIoRoEaoUDhDmEUo0CNUKBwhzCKUaBGKFC4QxjFKFAjFCjcIYxiFKgRChTuEEYxCtQIBQp3CKMYBWqEAoU7hFGsY4FOvv3228O4n2RgKFC4QxjFuhTo8aNREmxdfxb98wwGBQp3CKPY6gJ9vpt259Xbt29fTf\d\u0ZfKZBoEDhDmEUW1Wgk6fJhY\Lhfc3X4ySG9WS\Jc7O+89CTde7+zs3Fx8A8tQoHCHMIqtKNCTh9uPG794vnvxd\mtL9\Ki3KB9Psx\f3by66gaUoULhDGMVWFOjkN61ffZ3Pgr69m3bnD5\dzP5LO\O9J+0bvX\aDUKBroWtmjEQRrH1dmMKVfn27r1p6NN77RuN575E3axArT+JMx1ix1bNSChQsVUF+ua70x59kc5lZrOi6RL7vfaNxnOtB6YzFOgSKyPLVs1oKFCxVetAb73zu6UPvt7ZuZev8Ax1ebN9o88PumlYhNc5Zasm1kUYxdYp0FCSP\kDBapCgaqcslUTayOMYusVaFiG77oIjwYKVGX5Vk2sjzCKrVmg6cxmuclowY3ePuUGokDhDmEUW1mgW7\89cxvZl\2eT++WLT3ErsxdUCBwh3CKLayQJO62uxo1pLZYjo70mtQoConH1xjlWc0hFFs9Rzoj2\P\LS+uunLnWwrPIdyqlCgKvk6pcmf\ZQVnxEQRrE114FCiwJVyQNJLOMgjGIUqBEKVIUCjYkwilGgRihQFQo0JsIoRoEaoUBVKNCYCKPYqrMxsbY+EgpUhQKNiTCKcVE5IxSoCgUaE2EUW7UIz253kVCgKvl+dR+Oir3rWD7qFWEU67QOlAX5\lGgKsuP7MD6CKNYpwJlial\FKjK5Otf\3rxscVYH2EUo0CNUKBwhzCKUaBGKFC4QxjFKFAjFKjWm2y5\fiDq1c\sf4om4YwilGgRihQpb8dhTAeZZeVu2H9YTYMYRSjQI1QoDpHo62PD6eTh8nPpse3kjvWH2ezEEaxTqezY7e7\lGgOnvJu9NQoxfTKI6TS9YfZ7MQRjH1CZWxHgpUZfJw69NpqM68Rglkrwij2Kpj4dntLhIKVKVYm7SXLbyzaqlnhFGMY+GNUKAqxaFxD7PmpEB7RhjFKFAjFKhKvgifrwIt\0FfCKNYhwKdfHF1lFy49jikl8D2hQLVyTYi7WerQNPbbETqFWEUW12gfzsqtiBt\+d8Cyj6QIHqHI2S61\kG48OkmyDEnpDGMVWFuh+ktz4Lv33zdO0Q5kB7Q0FqhS+0Lfu5DuI8H3eL8IotqpA0y\8cmflccJ+y\2hQLUmv\51+B4\uRXWKqFPhFFsVYHOVjNNHiascuoPBQp3CKPYqv1AH1armcbJbTZ69ocChTuEUaz7VTkPrv0Nu931hwJVOn6UJFs3+CaPgTCKSS5rzH7LPaJAdcK2oytJsk0SIyCMYt0X4dlvuVcUqM5e2BVk8pAN8DEQRrHVG5FmSd0ntf2hQFWqk4nwXR4BYRRbvRtTNQtau4m1UaAqxWok1iZFQRjFOuxIH05gGw7oHDED2iMKVIUCjYkwinU8lPNq+t8Wl6DpEQWqQoHGRBjFup1MJFTox6x06hMFqkKBxkQYxTidnREKVIUCjYkwilGgRihQlfwiXdVVurhIV68Io9jqAuUy3FFQoCpcpCsmwii2skC5DHccFKgKF+mKiTCKddgPlMtwx0CBwh3CKNbtSCQuw907CtTcS8y5fNn6Ezh0eoi6HQvPZbh7R4GqnPyr+TXxBz8ilH0hjGLdzsbEZbh7R4HqHIy2ayeinxxc4fiO\hBGsU4FymW4+0eBKoXzgV778998++23X3+xmyTXn1l\oA1CGMU6LcJzGe7+UaBqxx9UuzFdoz77RBjFOm1E4jLc\aNA1\H1L27fvv3Rb6w\xqYhjGIdrsrJZbhjoEDhDmEU67AjPZfhjoEChTuEUWz1oZxchjsKChTuEEYxTiZihAKFO4RRjAI1QoHCHcIotmo\UA78iIQChTuEUWzVHCgHfkRCgcIdwii2chGeAz\ioEDhDmEU67AOlAM\YqBA1zH5q9s\PZxwNtCeEUaxbhuROPCjdxToGg5G4WT0J7c4tLhfhFGMrfBGKFC9cbL1n8KJbfY4tKNfhFGMAjVCgapNHiZ3sjODcXabnhFGMQrUCAWqFsozK1DOr9gzwihGgRqhQNUo0FgIoxgFaoQCVQsnqc26c5ywCN8rwihGgRqhQPX2k4v\Jy3Q5yM2IvWLMIpRoEYo0DU8LfZL5gTf\SKMYhSoEQp0Hc\DwR1XOaq4Z4RRrFuBvvk2+PpX\5F19n2hQOEOYRTrUqAnu+WhnGz07A0FCncIo1iXAt1LkitJciFJOBNTfyjQdU2+tf4EG4cwinUo0HDgR77nCBs9+0OBruF4N9sLlC\0nhFGsQ4FepIfdnyH3e76RIHqjUdhZdLkUZKGEj0ijGJdCzRcGp4DP3pEgaqli0T5ohDf6D0jjGKdFuGzgz4uUaB9okDVqhwSyJ4RRrFuG5E+yU58czQir72hQNVObm19mt0gkD0jjGJdCjTL6V6ytd6RHy9RNytQ60\iTIco7eWL7umiPIci9YoCFeu0I\3xv\5dSGtynTVOvWEOVO\kVpJcuHqF\ZL7RhjFBIdyTuJ9igGiQNcweTpKkmTrBl\o\SKMYhwLb4QCXRO70fePMIp1K1Augtg7ChTuEEaxTgXKRRD7R4GqTL7+zeHk61+X+E7vFWEU61KgXAQxAgpUJb+cR8LZbaIgjGIdj4XnIoh9o0BVJn\208PJn90u\ZRA9okwinU8lJNrePWNAoU7hFGMAjVCgaplxxYjAsIo1mkRnosg9o8CVeOLPBbCKNZlIxIXQYyAAlUL3+jWn2EzEUaxTrsxcRHE\lGgepNHW9fZjSkCwijWbUd6LoLYOwpUjd2YYiGMYhzKaYQCVWM3plgIo1jXEyqjZxQo3CGMYl0v6YGeUaBwhzCKddyNKf4HGRoKVOn4ESeyi4UwinVZB8pGzwgoUJ2wBelKkmyzUBQBYRTrtAjPRs\+UaA62eU8qutyoleEUazLIjwbPSOgQFWK9UkcFBcFYRRjNyYjFKhKsUWTDZtREEYxUYGGi8uhHxSoCgUaE2EU616gk4MrrAPtDwWqQoHGRBjFuhbom3AdRPYe6Q8FqkKBxkQYxToeC7+bJMm130b+LINCgapQoDERRrEuW+G\GLEHU+8oUJWTW1s\vn379oej7B92C+kXYRRbWaDhwI\k2l\zjd8zClSltlMyOyb3jjCKrSjQk4dJcuGTQxaZekeBqtQuacyhcb0jjGKrCvRWcv3ZlHVO\aNA4Q5hFFu1CH9wJUm2Pj6kQPtGgcIdwii2eiNStgPThREF2i8KFO4QRrFOuzFlezFli\LoCwUKdwijWMcd6fP96D9mlX1vKFC4QxjFuh\KGWZDWY7vDQUKdwijmORkIm+e\ogC7QsFCncIoxinszNCgcIdwihGgRqhQOEOYRSjQI1QoHCHMIpRoEYoULhDGMUoUCMUKNwhjGIUqBEKFO4QRjEK1AgFCncIoxgFaoQChTuEUYwCNUKBwh3CKEaBGqFA4Q5hFKNAjVCgcIcwilGgRihQuEMYxShQIxQo3CGMYhSoEQoU7hBGMQrUCAUKdwijGAVqhAKFO4RRjAI1QoHCHcIoRoEaoUDhDmEUo0CNUKBwhzCKUaBGKFC4QxjFKFAjFCjcIYxiFKgV+hPekEYxCtQM\QlniKMYBWqH\oQv5FGMAjVEXuEKgRSjQA2RV7hCIMUoUEPkFa4QSDEK1BB5hSsEUowCNUReh+AyIrGesgEFashHBBCVdctsMOtJG1CghnxEAFFdvvxHiMHH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jZ40CfbGzs3Mz3Hi9\AZO4yMCiIoCjcTH6NEX6Iude2lR3gxt+WD6\f2FN3AqHxFAVBRoJD5Gj7pA84J88f5XP3wWbrx+70n7Rl8fclP5iACiokAj8TF61AX69u6D9OeL9568vXsvu3uvfaOvD7mpfEQAUVGgkfgYPWtuRPry\a\yJv3+\r32jcZTX2Le5cvWn8Ch9QLpDwUaySYUaL4eNK\Lm+0bjedaD0yHKNAF1gqkQxRoJBtQoNU2pC4FihYfEUBUFGgkPkbPOgUa5j\LlaGrF+HR4iMCiIoCjcTH6FmjQL\M+nNabjJ60L7RyyfcYD4igKgo0Eh8jJ519gPNC5LdmNR8RABRUaCR+Bg9a+zGVC6hsyO9lo8IICoKNBIfo0ddoOFAzlSYzeRQTiUfEUBUFGgkPkYPJxMx5CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCG8PnRboo0Eh8jB4K1JCPCGwKpxfpokAj8TF6KFBDPiKwIbxepIsCjcTH6KFADfmIwIbwepEuCjQSH6OHAjXkIwIbRXCRrjO6yAwFGslZXRDn9MBRoIYo0L5JLtJFgZ5vFOjgUaA983iRLgo0Eh+jhwI15CMCm8PlRboo0Eh8jB4K1JCPCGwMnxfpokAj8TF6KFBDPiKwKZxepIsCjcTH6KFADfmIwIbwepEuCjQSH6OHAjXkIwIbwutFuijQSHyMHgrUkI8IICoKNBIfo4cCNeQjAoiKAo3Ex+ihQA35iACiOlcF+sr6Awj4GD0UqCEfEUBUFGgkPkYPBWrIRwQQFQUaiY\RQ4Ea8hEBRHVOCvRV7ef56FEfo4cCNeQjAojqnBRoXpqNGnXOx+ihQA35iACiOi8FmtVmrUXd8zF6KFBDPiKAqM5NgYbirEr0HPAxeihQQz4igKjOT4Gm1fnq\PQnBQofEUBU56hA\+jVq\PTnxQofEQAUZ2nAg0Nem74GD0UqCEfEUBU56FAXy1g\ZlW8jF6KFBDPiKAqM5DgZZYhBejQA35iACiOkcFykYkOQrUkI8IIKrzU6DsxqRAgRryEQFEdW4KlB3pNShQQz4igKjOS4FyKKcKBWrIRwQQ1TkpUE4mokOBGvIRAUR1Tgo0dy6as+Bj9FCghnxEAFFRoJH4GD0UqCEfEUBUFGgkPkYPBWrIRwQQ1WXEYj1pAwrUkI8IICrrltlg1pM2oEAN+YgAorJumQ1mPWkDCtSQjwggKuuW2WDWkzagQA35iACism6ZDWY9aQMK1JCPCCCqc7UV\jzxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6KFADfmIAKKiQCPxMXooUEM+IoCoKNBIfIweCtSQjwggKgo0Eh+jhwI15CMCiIoCjcTH6Dm7An2JeZcvW38Ch84skGeEAo1kaAWKFh8RQFQUaCQ+Rg8FashHBBAVBRqJj9FDgRryEQFERYFG4mP0UKCGfEQAUVGgkfgYPRSoIR8RQFQUaCQ+Rg8FashHBBAVBRqJj9FDgRryEQFERYFG4mP0UKCGfEQAUVGgkfgYPRSoIR8RQFQUaCQ+Rg8FashHBBAVBRqJj9FDgRryEQFERYFG4mP0UKCGfEQAUVGgkfgYPRSoIR8RQFQUaCQ+Rg8FashHBBAVBRqJj9FDgRryEQFERYFG4mP0UKCGfEQAUVGgkfgYPRSoIR8RQFQUaCQ+Rg8FashHBBAVBRqJj9FDgRryEQFERYFG4mP0UKCGfEQAUVGgkfgYPRSoIR8RQFSXEYv1pA0oUEM+IoCorFtmg1lP2oACNeQjAkCBQIpRoIbIK1whkGIUqCHyClcIpBgFaoi8whUCKUaBGiKvcIVAilGghsgrXCGQYhSoIfIKVwikGAVqiLzCFQIpRoEaIq9whUCKbV6BWh8esbGsJyyiYyKLbVyBWtfM5rKesoiOiSy2gQVqfZaYzcTYGgAmshgFik4YWwPARBajQNEJY2sAmMhiFCg6YWwNABNZjAJFJ4ytAWAii1Gg6ISxNQBMZDEKFJ0wtgaAiSxGgaITxtYAMJHFKFB0wtgaACayGAWKThhbA8BEFqNA0QljawCYyGIUKDphbA0AE1mMAkUnjK0BYCKLUaDohLE1AExkMQoUnTC2BoCJLEaBohPG1gAwkcUoUEuvrD9Ad4ytAWAii1GglihQeMJEFqNATbxa9I9rjK0BYCKLUaA2XrV+OsfYGgAmshgFauRV84d7jK0BYCKLUaBWXtX+OwcYWwPARBajQM28Kv\3XGBsDQATWYwCtfMq+59zgrE1AExkMQrU0KtX56Y\KdAhYCKLUaAGXrVZf6SVGFsDwEQWo0ANnYfiLDG2BoCJLEaB2mEdKHxhIotRoGbYCg9nmMhiFKgV9gOFN0xkMQrUCEciwR0mshgFaoNj4eEPE1mMAjXB2ZjgEBNZjAK1dB6as8DYGgAmshgFaokChSdMZDEKFJ0wtgaAiSxGgaITxtYAMJHFKFB0wtgaACayGAWKTjZwbL3EnMuXrT+BQ6eHiAJFJxtYoJjHRBZbq0Df\tuvwj+vd3Z2bi6+cfYo0DgYWwPARBZbp0C\v\9+KNDXOw\SmzcX3TBAgcbB2BoAJrLYGgWazmaGAv3hs9CUr9970r7R02cUoUDjYGwNABNZTF+gb+\eexEKNP03v9e+0Xj+Ga3ypUDjOLPtC2vFGWuhQMXWWgdaFOiDaVicv9e+0XjyGY2\y4jkjCbgOoHEeihQsfULNKzwDHV5s32jl08oZF0zm8tiauJMMZHFKFB0ZDE1caaYyGJntwh\RqxrZnNZTE2cKSayWB8Fmm8yetC+0csnFLKumc1lMTVxppjIYusXKLsxDQJjawCYyGLrFyg70g8CY2sAmMhiPRQoh3IOAWNrAJjIYpxMBJ0wtgaAiSxGgaITxtYAMJHFKFB0wtgaACayGAWKThhbA8BEFqNA0QljawCYyGIUKDphbA0AE1mMAkUnjK0BYCKLUaDohLE1AExkMQoUnTC2BoCJLEaBohPG1gAwkcUoUHTC2BoAJrIYBYpOGFsDwEQWo0DRCWNrAJjIYhQoOmFsDQATWYwCRSeMrQFgIotRoOiEsTUATGQxChSdMLYGgIksRoGiE8bWADCRxShQdMLYGgAmshgFik4YWwPARBajQNEJY2sAmMhiFCg6YWwNABNZjAJFJ4ytAWAii1Gg6ISxNQBMZDEKFJ0wtgaAiSxGgaITxtYAMJHFKFB0wtgaACayGAWKThhbA8BEFqNA0QljawCYyGIUKDphbA0AE1mMAkUnjK0BYCKLUaDohLE1AExkMQoUnTC2BoCJLEaBohPG1gAwkcUoUHTC2BoAJrLYBhYo4rCesoiOiSxGgaIj6ymL6JjIYhtXoOcJeYUrBFKMAjVEXuEKgRSjQA2RV7hCIMUoUEPkFa4QSDEK1BB5hSsEUowCNURe4QqBFKNADZFXuEIgxShQQ+QVrhBIMQrUEHmFKwRSjAI1RF7hCoEUo0ANkVe4QiDFKFBD5BWuEEgxCtQQeYUrBFKMAjVEXuEKgRSjQA2RV7hCIMUoUEPkFa4QSDEK1BB5hSsEUowCNURe4QqBFKNADZFXuEIgxShQQ+QVrhBIMQrUEHmFKwRSjAI1RF7hCoEUo0ANkVe4QiDFKFBD5BWuEEgxCtQQeYUrBFKMAjVEXuEKgRSjQA2RV7hCIMUoUEPkFa4QSDEK1BB5hSsEUowCNURe4QqBFKNADZFXuEIgxShQQ+QVrhBIMQrUEHmFKwRS7OwK9CXmXb5s\QkcOrNAooUCFWMO1BB5hSsEUowCNURe4QqBFKNADZFXuEIgxShQQ+QVrhBIMQrUEHmFKwRSjAI1RF7hCoEUo0ANkVe4QiDFKFBD5BWuEEgxCtQQeYUrBFKMAjVEXuEKgRSjQA2RV7hCIMUoUEPkFa4QSDEK1BB5hSsEUowCNURe4QqBFKNADZFXuEIgxShQQ+QVrhBIMQrUEHmFKwRSjAI1RF7hCoEUo0ANkVe4QiDFKFBD5BWuEEgxCtQQeYUrBFKMAjVEXuEKgRSjQA2RV7hCIMUoUEPkFa4QSDEK1BB5hSsEUowCNURe4QqBFKNADZFXuEIgxShQQy9fWn8CoIZAilGghsgrXCGQYhSoIfIKVwikGAVqiLzCFQIpRoEaIq9whUCKUaCGyCtcIZBiFKgh8gpXCKQYBWqIvMIVAilGgRoir3CFQIpRoIbIK1whkGIUqCHyClcIpBgFaoi8whUCKUaBGiKvcIVAilGghsgrXCGQYhSoIfJ6Vl7v7OzctP4Q\hFIMQrUEHk9I693Hky\v0+DrkIgxShQQ+T1bPzwWejO1+89sf4g3hFIMQrUEHk9G2\v3qt+1rwEVjs9WxSoIQr0bLy9+yD9+f19ChRyp2eLAjVEgZ6NsAp0ykrQ1QikGAVqiLyeDQq0IwIpRoEaIq9nY8kiPOYRSDEK1BB5PRvlRqQH1h\EWjcwlwAAAf1JREFUOwIpRoEaIq9ng92YOiKQYhSoIfJ6RtiRvhsCKUaBGiKvZ4VDOTshkGIUqCHyClcIpBgFaoi8whUCKUaBGiKvcIVAilGghsgrXCGQYhSoIfIKVwikGAVqiLzCFQIpRoEaIq9whUCKUaCGyCtcIZBiFKgh8gpXCKQYBWqIvMIVAilGgRoir3CFQIpRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgBIFCgBKFCgAKFGgAKBEgQKAEgUKAEoUKAAoUaAAoESBAoASBQoAShQoAChRoACgRIECgNL\B\uIor8+dLOsAAAAAElFTkSuQmCC" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Takehome_ex01
+</h5>
+<div class="card-text listing-description">
+The housing market in Singapore comprises both public and private sectors. Public housing serves…
+</div>
+<div class="card-attribution card-text-small start">
+<div class="listing-author">
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+<nav id="listing-pagination" class="listing-pagination" aria-label="Page Navigation">
+  <ul class="pagination"></ul>
+</nav>
+</div></main>  
+</div>
+ <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -268,13 +508,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
   toggleBodyColorPrimary();  
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
   const isCodeAnnotation = (el) => {
     for (const clz of el.classList) {
       if (clz.startsWith('code-annotation-')) {                     

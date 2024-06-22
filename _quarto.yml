@@ -51,8 +51,9 @@ website:
 
 format:
   html:
+    theme: Solar
     fontsize: 1.0em
-    css: bootstrap.css
+    css: ThemeL.css
     toc: true
     toc-title: Table of Contents
     toc-depth: 4

@@ -3,11 +3,11 @@ title: "TakeHome Ex03"
 author: "Michelle zhang"
 ---
 
-# **1. Recap of Sub Q1**
+# 1. Recap of Sub Q1
 
 FishEye analysts have long wanted to better understand the flow of commercially caught fish through Oceanus's various ports. However, when loading data into CatchNet, they discovered that they had purchased port exit records (i.e., records of trucks/trains leaving the port area) instead of ship off-load records. Port exit records do not include information on which vessels delivered the products. Given this limitation, we need to develop a visualization system to associate vessels with their probable cargos, analyze which vessels delivered which products and when, and identify seasonal trends and anomalies in the port exit records.
 
-## **1.1 Approach for Sub Q1**
+## 1.1 Approach for Sub Q1
 
 **Goal**: Develop a visualization system to associate vessels with their probable cargos.
 
@@ -19,15 +19,15 @@ FishEye analysts have long wanted to better understand the flow of commercially 
 
 3.  Analyze and visualize the seasonality of cargo and detect anomalies in port exit records to gain actionable insights.
 
-# **2. Data Import and Processing**
+# 2. Data Import and Processing
 
-## **2.1. Import packages**
+## 2.1. Import packages
 
 ```{r}
 pacman::p_load(sf, tidyverse,jsonlite,dplyr,stringr,knitr,ggplot2,lubridate,ggiraph,viridis,plotly,gridExtra,readr)
 ```
 
-## **2.2 Import Data**
+## 2.2 Import Data
 
 ```{r}
 vessel_movement_data <- read_rds("vessel_movement_data.rds")
@@ -55,11 +55,11 @@ head(Harbor_Reports_data)
 ```
 :::
 
-# **3. Addressing Mini-challenge 2- Step 1 Identifying Vessels Associated with Each Order Using** Harbor_Reports_data
+# 3. Addressing Mini-challenge 2- Step 1 Identifying Vessels Associated with Each Order Using Harbor_Reports_data
 
 **Objective**: Identify the vessels associated with each order by merging Transaction_data and Harbor_Reports_data based on time and port.
 
-## 3.1 **Data Merging**:
+## 3.1 Data Merging:
 
 ```{r}
   merged_data <- left_join(Transaction_data, Harbor_Reports_data, by = c("target", "date_added"), suffix = c(".transaction", ".harborreport"))
@@ -213,7 +213,7 @@ girafe(ggobj = p, width_svg = 25, height_svg = 15, options = list(
   opts_sizing(rescale = TRUE)))
 ```
 
-# **4 Addressing Mini-challenge 2- Step 2: Further Matching Using TransponderPing Data**
+# 4. Addressing Mini-challenge 2- Step 2: Further Matching Using TransponderPing Data
 
 **Objective**: For orders in Transaction_data that did not match any vessels in Step 1 (i.e., where probable vessels are marked as NA), use TransponderPing data to identify potential vessels.
 
@@ -286,7 +286,7 @@ head(merged_data_NA_checkmclean)
 
 After completing the matching process using TransponderPing data, it was found that all instances where ProbableVessel was marked as NA corresponded to multiple possible vessels. The next step involves further scrutiny to determine which vessels among the multiple options are unlikely candidates.
 
-# **4 Addressing Mini-challenge 2- Step 3: Filtering Unlikely Vessels Using Vessel Movement Data**
+# 5. Addressing Mini-challenge 2- Step 3: Filtering Unlikely Vessels Using Vessel Movement Data
 
 **Objective**: Utilize vessel_movement_data to determine the paths of vessels in observed period associated with each transaction. Filter out vessels from the list of potential candidates that are unlikely based on their historical movements.
 
@@ -314,7 +314,7 @@ After completing the matching process using TransponderPing data, it was found t
 
 ![](images/clipboard-3980418323.png)
 
-## 4.1 Data prepare
+## 5.1 Data prepare
 
 ```{r}
 #| class: output
@@ -372,7 +372,7 @@ merged_data_earlcheck <- vessel_movemen_timestamp %>%
 head(merged_data_earlcheck)
 ```
 
-## 4.2 **Historical Path Analysis**:
+## 5.2 Historical Path Analysis
 
 ```{r}
 #| class: output
@@ -458,7 +458,7 @@ result <- result[order(result$`Number of Cities Visited in Past 72 Hours`), ]
 kable(result, align = "c")
 ```
 
-## 4.3 **Identifying Unlikely Vessels**
+## 5.3 Identifying Unlikely Vessels
 
 ```{r}
 #| class: output
@@ -523,7 +523,7 @@ Based on the above definitions, we can exclude the following combinations:
 
 The following combinations are considered for further review: (0, 1), (0, 2), (0, 3), (0, 4), (1, 1), (2, 1), (3, 1), (4, 1), (1, 2), (2, 2). These combinations indicate scenarios where vessels visited a limited number of cities, suggesting potential involvement in cargo transport rather than tourism or sightseeing activities. Each combination will be carefully assessed to determine their suitability regarding the transportation of goods from other cities to the current port
 
-## 4.4 Visualization to Associate Cargos with Probable Vessels
+## 5.4 Visualization to Associate Cargos with Probable Vessels
 
 ```{r}
 #| class: output
@@ -605,7 +605,7 @@ girafe(ggobj = p, width_svg = 25, height_svg = 15, options = list(
 })
 ```
 
-# 5.Analyzing and Visualizing Seasonality and Anomalies in Port Exit Records
+# 6. Analyzing and Visualizing Seasonality and Anomalies in Port Exit Records
 
 ```{r}
 #| class: output

@@ -1,11 +1,28 @@
 ---
-title: "VAA"
+title: "ISSS608 Visual Analytics and Applications Homepage"
+about:
+  template: jolla
+  image-width: 50em
+  image-shape: rectangle
+  image: 'Images/About.gif'
+listing:
+  type: grid
+  max-items: 12
+  page-size: 3
+  grid-item-align: center
+  max-description-length: 130
+  contents:
+    - "InClass_Ex/*/*.qmd"
+    - "Hands-on_Ex/*/*.qmd"
+    - "Takehome_Ex/*/*.qmd"
+  sort: 
+    - "date desc"
 ---
 
-This is a Quarto website.
+## Welcome to a World Where Data Speaks and Insights Shine
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Hello World! This is my Visual Analytics and Applications page, where I present my coursework and projects for this module.
 
-```{r}
-1 + 1
-```
+Dive into my work as I combine theory with practical applications. Each project is an opportunity to learn, experiment, and push the boundaries of what data analytics can achieve.
+
+**A Feature of My Latest Works:**
