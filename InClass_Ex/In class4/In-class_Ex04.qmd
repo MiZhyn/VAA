@@ -1,0 +1,174 @@
+---
+title: "In-class Ex04"
+author: "Michelle Zhang"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+format: html
+editor: visual
+---
+
+### 1. Install and loading R packages
+
+```{r}
+pacman::p_load(plotly, DT, patchwork, ggstatsplot, readxl, performance, parameters, see, gtsummary, tidyverse)
+```
+
+### 2. Importing Data
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
+```{r}
+car_resale <- read_xls("data/ToyotaCorolla.xls", 
+                       "data")
+```
+
+### 3. Interactivity in plotting
+
+```{r}
+plot_ly(data = exam_data,
+        x = ~ENGLISH,
+        y = ~MATHS,
+        color = ~RACE)
+```
+
+```{r}
+p <- ggplot(data=exam_data, 
+            aes(x = MATHS,
+                y = ENGLISH,
+                color = RACE)) +
+  geom_point(size = 1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+ggplotly(p) 
+```
+
+### 4. Visual statistical plotting
+
+#### 4.1 Two-sample mean testing
+
+```{r}
+ggbetweenstats(
+  data = exam_data,
+  x = GENDER,
+  y = MATHS,
+  #"p" is parametric test while "np" is non-parametric test
+  type = "p",
+  messages = FALSE
+)
+```
+
+#### 4.2 Scatterplot testing
+
+```{r}
+ggscatterstats(
+  data = exam_data,
+  x = MATHS,
+  y = ENGLISH,
+  #the default for marginal is TRUE which will show the marginal plots
+  marginal = TRUE
+)
+```
+
+### 5. Model visualization
+
+#### 5.1 Building least-square multiple regression model
+
+`lm()` is base R model to build least-square multiple regression model
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year + KM +
+              Weight + Guarantee_Period, data = car_resale)
+model
+```
+
+#### 5.2 Diagnostic test : Check for multi-collinearity
+
+```{r}
+check_c <- check_collinearity(model)
+plot(check_c)
+```
+
+#### 5.3 Diagnostic test : Check for normality assumption
+
+```{r}
+#Remove Mfg_Year from model due to high collinearity
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+model1
+```
+
+```{r}
+check_n <- check_normality(model1)
+plot(check_n)
+```
+
+#### 5.4 Diagnostic test : Check for variance homogeneity
+
+```{r}
+check_h <- check_heteroscedasticity(model1)
+plot(check_h)
+```
+
+#### 5.5 Diagnostic test : Check for everything
+
+```{r}
+#| fig-height: 15
+#| fig-width: 12.5
+check_model(model1)
+```
+
+#### 5.6 Visualizing regression parameters
+
+```{r}
+plot(parameters(model1))
+```
+
+```{r}
+ggcoefstats(model1, 
+            output = "plot")
+```
+
+### 6. Visualization of uncertainty
+
+Data preparation
+
+```{r}
+#group by RACE and calculate mean, sd, and se of MATHS score
+my_sum <- exam_data |> 
+  group_by(RACE) |> 
+  summarize(
+    n = n(),
+    mean = mean(MATHS),
+    sd = sd(MATHS)) |>
+  mutate(se = sd/sqrt(n-1))
+```
+
+Plotting using ggplot2
+
+```{r}
+ggplot(my_sum) +
+  
+  geom_errorbar(
+    aes(x = RACE,
+        ymin = mean - se,
+        ymax = mean + se),
+    width = 0.2,
+    colour = "black",
+    alpha = 0.9,
+    linewidth = 0.5) +
+  
+  geom_point(
+    aes(x = RACE,
+        y = mean),
+    stat = "identity",
+    colour = "red",
+    size = 1.5,
+    alpha = 1) +
+  
+  ggtitle("Standard error of mean
+          maths score by race")
+```

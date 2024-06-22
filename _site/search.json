@@ -168,6 +168,55 @@
     "text": "4.4 EDA4 Regional Deviation in Unit Prices Across Singapore\n\nThe PlotThe Code Chunk\n\n\n\n\n\n\n\n\n\n\nlibrary(ggplot2)\n\n# Private\ndf_Aavg &lt;- uniondata %&gt;%\n  filter(Purchaser.Address.Indicator == \"Private\") %&gt;%\n  group_by(Planning.Area) %&gt;%\n  summarise(avg_Aprice = mean(Unit.Price....PSF.))\n\ndf_Aavg$p_z &lt;- round((df_Aavg$avg_Aprice - mean(df_Aavg$avg_Aprice)) / sd(df_Aavg$avg_Aprice), 2)\ndf_Aavg$p_ztype &lt;- ifelse(df_Aavg$p_z &lt; 0, \"below\", \"above\")\ndf_Aavg &lt;- df_Aavg[order(df_Aavg$p_z), ]\n\ndf_Aavg$Planning.Area &lt;- factor(df_Aavg$Planning.Area, levels = df_Aavg$Planning.Area)\n\nplot11 &lt;- ggplot(df_Aavg, aes(x = Planning.Area, y = p_z, label = p_z)) +\n  geom_bar(stat = \"identity\", aes(fill = p_ztype), position = position_dodge2(width = 2), width = 0.8) +\n  scale_fill_manual(name = \"Average Price\", labels = c(\"Above Average\", \"Below Average\"), values = c(\"below\" = \"#C83E4D\", \"above\" = \"#4A5859\")) +\n  labs(title = \"Unit Price Deviations by Area\", y = \"\", subtitle = \"Private\") +\n  coord_flip() +\n  theme(legend.position = \"None\", text = element_text(size = 8), plot.title = element_text(size = 12, face = \"bold\"))\n\n# HDB\ndf_AHavg &lt;- uniondata %&gt;%\n  filter(Purchaser.Address.Indicator == \"HDB\") %&gt;%\n  group_by(Planning.Area) %&gt;%\n  summarise(avg_Aprice = mean(Unit.Price....PSF.))\n\ndf_AHavg$p_z &lt;- round((df_AHavg$avg_Aprice - mean(df_AHavg$avg_Aprice)) / sd(df_AHavg$avg_Aprice), 2)\ndf_AHavg$p_ztype &lt;- ifelse(df_AHavg$p_z &lt; 0, \"below\", \"above\")\ndf_AHavg &lt;- df_AHavg[order(df_AHavg$p_z), ]\n\ndf_AHavg$Planning.Area &lt;- factor(df_AHavg$Planning.Area, levels = df_AHavg$Planning.Area)\n\nplot22 &lt;- ggplot(df_AHavg, aes(x = Planning.Area, y = p_z, label = p_z)) +\n  geom_bar(stat = \"identity\", aes(fill = p_ztype), position = position_dodge2(width = 2), width = 0.8) +\n  scale_fill_manual(name = \"Average Price\", labels = c(\"Above Average\", \"Below Average\"), values = c(\"below\" = \"#C83E4D\", \"above\" = \"#4A5859\")) +\n  labs(y = \"\", x = \"\", subtitle = \"HDB\") +\n  coord_flip() +\n  theme(text = element_text(size = 8),\n        legend.title = element_blank(),\n        legend.position = c(0.25, 0.9),\n        legend.key.size = unit(0.4, 'cm'),\n        legend.key.height = unit(0.4, 'cm'),\n        legend.key.width = unit(0.4, 'cm'))\n\nplot11 + plot22\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nBased on this chart, we can analyze the deviation of unit housing prices in different regions of Singapore:\nPrivate Properties:\n\nPrivate property prices in Chinatown, Newton, and Orchard Road areas are significantly higher than the average, with the highest deviations. These areas have prime locations, which may be the primary reason.\nSuburban areas such as Bukit Panjang, Serangoon, Balestier, and Bedok have private property prices below the average.\n\nHDB Flats:\n\nHDB flat prices in River Valley, Chinatown, and Newton areas are higher than the average, as these areas are close to the city center, which may be the main influencing factor.\nSuburban areas such as Balestier, Serangoon, Bedok, and Choa Chu Kang have HDB flat prices generally below the average."
   },
   {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html",
+    "title": "In-class Exercise 6",
+    "section": "",
+    "text": "pacman::p_load(tidyverse, readtext, corporaexplorer,\n               quanteda, stringi, stringr, rvest, tidytext)"
+  },
+  {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html#loading-r-packages",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html#loading-r-packages",
+    "title": "In-class Exercise 6",
+    "section": "",
+    "text": "pacman::p_load(tidyverse, readtext, corporaexplorer,\n               quanteda, stringi, stringr, rvest, tidytext)"
+  },
+  {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html#loading-the-data",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html#loading-the-data",
+    "title": "In-class Exercise 6",
+    "section": "6.2 Loading the data",
+    "text": "6.2 Loading the data\n\nbible &lt;- readr::read_lines(\"http://www.gutenberg.org/cache/epub/10/pg10.txt\")\n\nthe data is a text file; a plain text from a website"
+  },
+  {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html#pre-processing-the-text",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html#pre-processing-the-text",
+    "title": "In-class Exercise 6",
+    "section": "6.3 Pre-processing the text",
+    "text": "6.3 Pre-processing the text\n\nbible &lt;- paste(bible, collapse = \"\\n\")\n\n\nstart_v &lt;- stri_locate_first_fixed(bible, \"The First Book of Moses: Called Genesis\")[1]\nend_v &lt;- stri_locate_last_fixed(bible, \"Amen.\")[2]\nbible &lt;- stri_sub(bible, start_v, end_v)\n\n\nbooks &lt;- stri_split_regex(bible, \"\\n{5}\") %&gt;%\n    unlist %&gt;%\n    .[-40] # Removing the heading \"The New Testament of the King James Bible\",\n              # which also was preceded by five newlines.\n\n\nbooks &lt;- str_replace_all(books, \"\\n{2,}\", \"NEW_PARAGRAPH\") %&gt;%\n    str_replace_all(\"\\n\", \" \") %&gt;%\n    str_replace_all(\"NEW_PARAGRAPH\", \"\\n\\n\")\nbooks &lt;- books[3:68]  # The two first elements are not books\n\n\nchapters &lt;- str_replace_all(books, \"(\\\\d+:1 )\", \"NEW_CHAPTER\\\\1\") %&gt;%\n    stri_split_regex(\"NEW_CHAPTER\")\n\n\nchapters &lt;- lapply(chapters, function(x) x[-1])"
+  },
+  {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html#metadata",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html#metadata",
+    "title": "In-class Exercise 6",
+    "section": "6.4 Metadata",
+    "text": "6.4 Metadata\n\nbook_titles &lt;- read_html(\"https://www.esv.org/resources/esv-global-study-bible/list-of-abbreviations\") %&gt;%\n  html_nodes(\"td:nth-child(1)\") %&gt;%\n  html_text() %&gt;%\n  .[13:78]  # Removing irrelevant elements after manual inspection.\n\n\n# We add a column indicating whether a book belongs to the Old or New Testament,\n#   knowing that they contain respectively 39 and 27 books.\ntestament &lt;- c(rep(\"Old\", 39), rep(\"New\", 27))"
+  },
+  {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html#creating-data-frame-with-text-and-metadata",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html#creating-data-frame-with-text-and-metadata",
+    "title": "In-class Exercise 6",
+    "section": "6.5 Creating data frame with text and metadata",
+    "text": "6.5 Creating data frame with text and metadata\n\n# Data frame with one book as one row.\nbible_df &lt;- tibble::tibble(Text = chapters,\n                           Book = book_titles,\n                           Testament = testament)\n\n\n# We want each chapter to be one row, but keep the metadata (book and which testament).\nbible_df &lt;- tidyr::unnest(bible_df, Text)"
+  },
+  {
+    "objectID": "InClass_Ex/In class6/In-class_Ex06a.html#using-corporaexplorer",
+    "href": "InClass_Ex/In class6/In-class_Ex06a.html#using-corporaexplorer",
+    "title": "In-class Exercise 6",
+    "section": "6.6 Using corporaexplorer",
+    "text": "6.6 Using corporaexplorer\n\nKJB &lt;- prepare_data(dataset = bible_df,\n                    date_based_corpus = FALSE,\n                    grouping_variable = \"Book\",\n                    columns_doc_info =\nc(\"Testament\", \"Book\"))  #that helps group together the one that we are extracting\n# a unique object class is created that R Studio can read\n\n\nclass(KJB) #to check that the object class is created properly since it is specially catered to corpora explorer\n\n[1] \"corporaexplorerobject\""
+  },
+  {
     "objectID": "InClass_Ex/In class2/In-class_Ex02.html",
     "href": "InClass_Ex/In class2/In-class_Ex02.html",
     "title": "In-class Exercise 2",
@@ -595,18 +644,18 @@
     "text": "3. Parallel Coordinates\nParallel coordinates plot is a data visualisation specially designed for visualising and analysing multivariate, numerical data. It is ideal for comparing multiple variables together and seeing the relationships between them.\nThe strength of parallel coordinates isn’t in their ability to communicate some truth in the data to others, but rather in their ability to bring meaningful multivariate patterns and comparisons to light when used interactively for analysis.\nParallel coordinates plot can be used to characterise clusters detected during customer segmentation.\n\n3.1 Static Parallel Coordinates Plot\nEnhance visualisation with boxplot\n\nggparcoord(data = wh, \n           columns = c(7:12), \n           \n           #group observations using single variable (Region - column 2) and color\n           groupColumn = 2,\n           \n           #scale the variables using uniminmax method\n           scale = \"uniminmax\",\n           alphaLines = 0.2,\n           boxplot = TRUE, \n           title = \"Parallel Coordinates Plot of World Happines Variables\")\n\n\n\n\nWorking with facet_wrap()\n\nggparcoord(data = wh, \n           columns = c(7:12), \n           groupColumn = 2,\n           scale = \"uniminmax\",\n           alphaLines = 0.2,\n           boxplot = TRUE, \n           title = \"Multiple Parallel Coordinates Plots of World Happines Variables by Region\") +\n  facet_wrap(~ Region) + \n  \n  #rotating the x-axis label to improve readability\n  theme(axis.text.x = element_text(angle = 30, hjust = 1))\n\n\n\n\n\n\n3.1 Interactive Parallel Coordinates Plot\nparallelPlot is an R package specially designed to plot a parallel coordinates plot by using ‘htmlwidgets’ package and d3.js.\n\nwh_i &lt;- wh |&gt; \n  select(\"Happiness score\", c(7:12))\n\n\nhisto &lt;- rep(TRUE, ncol(wh_i))\n\nparallelPlot(wh_i,\n             continuousCS = \"YlOrRd\",\n             rotateTitle = TRUE,\n             histoVisibility = histo)"
   },
   {
+    "objectID": "InClass_Ex/In class4/In-class_Ex04.html",
+    "href": "InClass_Ex/In class4/In-class_Ex04.html",
+    "title": "In-class Ex04",
+    "section": "",
+    "text": "1. Install and loading R packages\n\npacman::p_load(plotly, DT, patchwork, ggstatsplot, readxl, performance, parameters, see, gtsummary, tidyverse)\n\n\n\n2. Importing Data\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\ncar_resale &lt;- read_xls(\"data/ToyotaCorolla.xls\", \n                       \"data\")\n\n\n\n3. Interactivity in plotting\n\nplot_ly(data = exam_data,\n        x = ~ENGLISH,\n        y = ~MATHS,\n        color = ~RACE)\n\n\n\n\n\n\np &lt;- ggplot(data=exam_data, \n            aes(x = MATHS,\n                y = ENGLISH,\n                color = RACE)) +\n  geom_point(size = 1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nggplotly(p) \n\n\n\n\n\n\n\n4. Visual statistical plotting\n\n4.1 Two-sample mean testing\n\nggbetweenstats(\n  data = exam_data,\n  x = GENDER,\n  y = MATHS,\n  #\"p\" is parametric test while \"np\" is non-parametric test\n  type = \"p\",\n  messages = FALSE\n)\n\n\n\n\n\n\n4.2 Scatterplot testing\n\nggscatterstats(\n  data = exam_data,\n  x = MATHS,\n  y = ENGLISH,\n  #the default for marginal is TRUE which will show the marginal plots\n  marginal = TRUE\n)\n\n\n\n\n\n\n\n5. Model visualization\n\n5.1 Building least-square multiple regression model\nlm() is base R model to build least-square multiple regression model\n\nmodel &lt;- lm(Price ~ Age_08_04 + Mfg_Year + KM +\n              Weight + Guarantee_Period, data = car_resale)\nmodel\n\n\nCall:\nlm(formula = Price ~ Age_08_04 + Mfg_Year + KM + Weight + Guarantee_Period, \n    data = car_resale)\n\nCoefficients:\n     (Intercept)         Age_08_04          Mfg_Year                KM  \n      -2.637e+06        -1.409e+01         1.315e+03        -2.323e-02  \n          Weight  Guarantee_Period  \n       1.903e+01         2.770e+01  \n\n\n\n\n5.2 Diagnostic test : Check for multi-collinearity\n\ncheck_c &lt;- check_collinearity(model)\nplot(check_c)\n\n\n\n\n\n\n5.3 Diagnostic test : Check for normality assumption\n\n#Remove Mfg_Year from model due to high collinearity\nmodel1 &lt;- lm(Price ~ Age_08_04 + KM + \n              Weight + Guarantee_Period, data = car_resale)\nmodel1\n\n\nCall:\nlm(formula = Price ~ Age_08_04 + KM + Weight + Guarantee_Period, \n    data = car_resale)\n\nCoefficients:\n     (Intercept)         Age_08_04                KM            Weight  \n      -2.186e+03        -1.195e+02        -2.406e-02         1.972e+01  \nGuarantee_Period  \n       2.682e+01  \n\n\n\ncheck_n &lt;- check_normality(model1)\nplot(check_n)\n\n\n\n\n\n\n5.4 Diagnostic test : Check for variance homogeneity\n\ncheck_h &lt;- check_heteroscedasticity(model1)\nplot(check_h)\n\n\n\n\n\n\n5.5 Diagnostic test : Check for everything\n\ncheck_model(model1)\n\n\n\n\n\n\n5.6 Visualizing regression parameters\n\nplot(parameters(model1))\n\n\n\n\n\nggcoefstats(model1, \n            output = \"plot\")\n\n\n\n\n\n\n\n6. Visualization of uncertainty\nData preparation\n\n#group by RACE and calculate mean, sd, and se of MATHS score\nmy_sum &lt;- exam_data |&gt; \n  group_by(RACE) |&gt; \n  summarize(\n    n = n(),\n    mean = mean(MATHS),\n    sd = sd(MATHS)) |&gt;\n  mutate(se = sd/sqrt(n-1))\n\nPlotting using ggplot2\n\nggplot(my_sum) +\n  \n  geom_errorbar(\n    aes(x = RACE,\n        ymin = mean - se,\n        ymax = mean + se),\n    width = 0.2,\n    colour = \"black\",\n    alpha = 0.9,\n    linewidth = 0.5) +\n  \n  geom_point(\n    aes(x = RACE,\n        y = mean),\n    stat = \"identity\",\n    colour = \"red\",\n    size = 1.5,\n    alpha = 1) +\n  \n  ggtitle(\"Standard error of mean\n          maths score by race\")"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "ISSS608 Visual Analytics and Applications Homepage",
     "section": "",
-    "text": "Hello World! This is my Visual Analytics and Applications page, where I present my coursework and projects for this module.\nDive into my work as I combine theory with practical applications. Each project is an opportunity to learn, experiment, and push the boundaries of what data analytics can achieve.\nA Feature of My Latest Works:"
-  },
-  {
-    "objectID": "index.html#welcome-to-a-world-where-data-speaks-and-insights-shine",
-    "href": "index.html#welcome-to-a-world-where-data-speaks-and-insights-shine",
-    "title": "ISSS608 Visual Analytics and Applications Homepage",
-    "section": "",
-    "text": "Hello World! This is my Visual Analytics and Applications page, where I present my coursework and projects for this module.\nDive into my work as I combine theory with practical applications. Each project is an opportunity to learn, experiment, and push the boundaries of what data analytics can achieve.\nA Feature of My Latest Works:"
+    "text": "Welcome to a World Where Data Speaks and Insights Shine\nHello World! This is my Visual Analytics and Applications page, where I present my coursework and projects for this module.\nDive into my work as I combine theory with practical applications. Each project is an opportunity to learn, experiment, and push the boundaries of what data analytics can achieve.\nA Feature of My Latest Works:\n\n\n\n\n\n\n\n\n\n\nIn-class Exercise 2\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nIn-class Ex04\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nIn-class Exercise 6\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex01\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex02\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHands_on Ex03\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHands_on Ex03b\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHands_on Ex04\n\n\n\n\n\n\nMichell Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex06\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex07\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex08\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex09\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nHands-on Ex09b\n\n\n\n\n\n\nMichelle Zhang\n\n\n\n\n\n\n\n\n\n\n\n\nTakehome_ex01\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTakehome_ex02\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTakeHome Ex03\n\n\n\n\n\n\nMichelle zhang\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "Takehome_Ex/TakeHome Ex02/takehomeex02.html#overview",

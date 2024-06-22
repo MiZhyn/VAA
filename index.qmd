@@ -2,12 +2,12 @@
 title: "ISSS608 Visual Analytics and Applications Homepage"
 about:
   template: jolla
-  image-width: 50em
+  image-width: 35em
   image-shape: rectangle
   image: 'Images/About.gif'
 listing:
   type: grid
-  max-items: 12
+  max-items: 24
   page-size: 3
   grid-item-align: center
   max-description-length: 130
@@ -19,7 +19,7 @@ listing:
     - "date desc"
 ---
 
-## Welcome to a World Where Data Speaks and Insights Shine
+**Welcome to a World Where Data Speaks and Insights Shine**
 
 Hello World! This is my Visual Analytics and Applications page, where I present my coursework and projects for this module.
 

@@ -40,14 +40,17 @@ website:
     
     - text: "In class Excercise"
       menu: 
-        - text: "In Class Ex 1"
+        - text: "In Class Ex 2"
           href: "InClass_Ex/In class2/In-class_Ex02.html"
+        - text: "In Class Ex 4"
+          href: "InClass_Ex/In class4/In-class_Ex04.html"
+        - text: "In Class Ex 6"
+          href: "InClass_Ex/In class6/In-class_Ex06.html"
+          
           
     right: 
       - href: index.qmd
         text: Home
-      - href: about.qmd
-        text: About
 
 format:
   html:

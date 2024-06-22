@@ -1,0 +1,181 @@
+---
+title: "In-class Exercise 6"
+author: "Michelle Zhang"
+execute:
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+  format: html
+editor: visual
+---
+
+# **Text Analytics using Corporaexplorer**
+
+## [1.1]{style="colour:grey"} Loading R packages
+
+```{r}
+pacman::p_load(tidyverse, readtext, corporaexplorer,
+               quanteda, stringi, stringr, rvest, tidytext)
+```
+
+## [1.2]{style="colour:grey"} Loading the data
+
+```{r}
+bible <- readr::read_lines("http://www.gutenberg.org/cache/epub/10/pg10.txt")
+```
+
+the data is a text file; a plain text from a website
+
+## [1.3]{style="colour:grey"} Pre-processing the text
+
+```{r}
+bible <- paste(bible, collapse = "\n")
+```
+
+```{r}
+start_v <- stri_locate_first_fixed(bible, "The First Book of Moses: Called Genesis")[1]
+end_v <- stri_locate_last_fixed(bible, "Amen.")[2]
+bible <- stri_sub(bible, start_v, end_v)
+```
+
+```{r}
+books <- stri_split_regex(bible, "\n{5}") %>%
+    unlist %>%
+    .[-40] # Removing the heading "The New Testament of the King James Bible",
+              # which also was preceded by five newlines.
+```
+
+```{r}
+books <- str_replace_all(books, "\n{2,}", "NEW_PARAGRAPH") %>%
+    str_replace_all("\n", " ") %>%
+    str_replace_all("NEW_PARAGRAPH", "\n\n")
+books <- books[3:68]  # The two first elements are not books
+```
+
+```{r}
+chapters <- str_replace_all(books, "(\\d+:1 )", "NEW_CHAPTER\\1") %>%
+    stri_split_regex("NEW_CHAPTER")
+```
+
+```{r}
+chapters <- lapply(chapters, function(x) x[-1])
+```
+
+## [1.4]{style="colour:grey"} Metadata
+
+```{r}
+book_titles <- read_html("https://www.esv.org/resources/esv-global-study-bible/list-of-abbreviations") %>%
+  html_nodes("td:nth-child(1)") %>%
+  html_text() %>%
+  .[13:78]  # Removing irrelevant elements after manual inspection.
+```
+
+```{r}
+# We add a column indicating whether a book belongs to the Old or New Testament,
+#   knowing that they contain respectively 39 and 27 books.
+testament <- c(rep("Old", 39), rep("New", 27))
+```
+
+## [1.5]{style="colour:grey"} Creating data frame with text and metadata
+
+```{r}
+# Data frame with one book as one row.
+bible_df <- tibble::tibble(Text = chapters,
+                           Book = book_titles,
+                           Testament = testament)
+```
+
+```{r}
+# We want each chapter to be one row, but keep the metadata (book and which testament).
+bible_df <- tidyr::unnest(bible_df, Text)
+```
+
+## [1.6]{style="colour:grey"} Using corporaexplorer
+
+```{r}
+KJB <- prepare_data(dataset = bible_df,
+                    date_based_corpus = FALSE,
+                    grouping_variable = "Book",
+                    columns_doc_info =
+c("Testament", "Book"))  #that helps group together the one that we are extracting
+# a unique object class is created that R Studio can read
+```
+
+```{r}
+class(KJB) #to check that the object class is created properly since it is specially catered to corpora explorer
+```
+
+# **Network Graphs Visualisation**
+
+## 2.1 **Loading the Packages**
+
+```{r}
+pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse)
+```
+
+```{r}
+# Read the JSON file as text
+json_text <- readLines("data/mc3.json", warn = FALSE)
+
+# Replace NaN with null
+json_text <- gsub("NaN", "null", json_text)
+
+# Convert the text back to JSON
+library(jsonlite)
+mc3_data <- fromJSON(paste(json_text, collapse = "\n"))
+
+# Verify the data
+str(mc3_data)
+```
+
+```{r}
+mc3_edges <-
+  as_tibble(mc3_data$links) %>%
+  distinct() %>%
+  mutate(source = as.character(source),
+         target = as.character(target),
+         type = as.character(type)) %>%
+  group_by(source,target, type) %>%
+  summarise(weights=n()) %>%
+  filter(source!=target) %>%
+  ungroup()
+```
+
+```{r}
+mc3_nodes <-
+  as_tibble(mc3_data$nodes) %>%
+  distinct() %>%
+  mutate(id = as.character(id),
+         country = as.character(country),
+         type = as.character(type),
+         ProductServices = as.character(ProductServices),
+         revenue = as.numeric(as.character(revenue))) %>%
+  select(id, country, type, revenue, ProductServices)
+```
+
+```{r}
+id1 <- mc3_edges %>%
+  select(source) %>%
+  rename(id = source)
+
+id2 <- mc3_edges %>%
+  select(target) %>%
+  rename (id=target)
+
+mc3_nodes1 <- rbind(id1,id2) %>%
+  distinct() %>%
+  left_join(mc3_nodes,
+            by =join_by(id),
+            unmatched = "drop")
+
+```
+
+```{r}
+mc3_graph <- tbl_graph (nodes = mc3_nodes1,
+                        edges = mc3_edges,
+                        directed = FALSE) %>%
+  mutate (betweeness_centrality = centrality_betweenness(),
+          closeness_centrality = centrality_closeness()
+)
+```
