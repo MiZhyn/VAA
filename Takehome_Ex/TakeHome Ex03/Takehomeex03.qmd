@@ -1,6 +1,12 @@
 ---
-title: "TakeHome Ex03"
+title: "Take-home Ex03"
 author: "Michelle zhang"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+format: html
+editor: visual
 ---
 
 # 1. Recap of Sub Q1

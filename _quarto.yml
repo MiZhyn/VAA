@@ -12,7 +12,7 @@ website:
         - text: "Hands-on Ex 2"
           href: "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html"
         - text: "Hands-on Ex 3a"
-          href: "Hands-on_Ex/Hands-on_Ex03/Handsonex03.html"
+          href: "Hands-on_Ex/Hands-on_Ex03/Handonex03.html"
         - text: "Hands-on Ex 3b"
           href: "Hands-on_Ex/Hands-on_Ex03/Handsonex03b.html"
         - text: "Hands-on Ex 4"
@@ -31,15 +31,17 @@ website:
       
     - text: "Take Home Excercise"
       menu: 
-        - text: "Take Home Ex 1"
+        - text: "Take-home Ex 1"
           href: "Takehome_Ex/TakeHome Ex01/Takehomeex01.html"
-        - text: "Take Home Ex 2"
+        - text: "Take-home Ex 2"
           href: "Takehome_Ex/TakeHome Ex02/takehomeex02.html"
-        - text: "Take Home Ex 3"
+        - text: "Take-home Ex 3"
           href: "Takehome_Ex/TakeHome Ex03/Takehomeex03.html"
     
     - text: "In class Excercise"
       menu: 
+        - text: "In Class Ex 1"
+          href: "InClass_Ex/In class1/Inclass01.html"
         - text: "In Class Ex 2"
           href: "InClass_Ex/In class2/In-class_Ex02.html"
         - text: "In Class Ex 4"

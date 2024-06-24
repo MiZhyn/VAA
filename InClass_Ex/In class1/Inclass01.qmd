@@ -1,0 +1,26 @@
+---
+title: "In-class Exercise 1"
+author: "Michelle Zhang"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+format: html
+editor: visual
+---
+
+## **Loading R packages**
+
+```{r}
+pacman::p_load(tidyverse)
+```
+
+```{r}
+realis.csv <- read_csv("data/realis2019.csv",show_col_types = FALSE)
+```
+
+```{r}
+ggplot(data = realis.csv,
+       aes(x = `Unit Price ($ psm)`)) + 
+  geom_histogram()
+```

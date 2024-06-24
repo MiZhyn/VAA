@@ -1,0 +1,19 @@
+---
+title: "Project"
+---
+
+```{r}
+pacman::p_load(sf, tidyverse,jsonlite,dplyr,stringr,knitr,ggplot2,lubridate,ggiraph,viridis,plotly,gridExtra,readr)
+```
+
+```{r}
+fish_data <- read_rds("fish_by_port_agg.rds")
+location_data <- read_rds("location_nodes_long.rds")
+region_data <- read_rds("region_fish_species_long.rds")
+th <- read_rds("thresult.rds")
+vessel <- read_rds("vessel_movement.rds")
+```
+
+```{r}
+view(vessel)
+```

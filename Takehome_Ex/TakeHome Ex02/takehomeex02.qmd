@@ -1,6 +1,6 @@
 ---
-title: "Takehome_ex02"
-Publish: 4/25/2024
+title: "Take-home Ex02"
+author: "Michell Zhang"
 execute: 
   echo: true
   eval: true
