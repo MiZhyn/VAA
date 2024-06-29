@@ -5,8 +5,9 @@ account: ynforvaashiny
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12224301
-bundleId: 8778792
+bundleId: 8785896
 url: https://ynforvaashiny.shinyapps.io/608project/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: fish_by_port_agg.rds|import_record.rds|location_nodes_long.rds|Project.qmd|region_fish_species_long.rds|reports.qmd|thresult.rds

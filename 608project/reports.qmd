@@ -7,3 +7,106 @@ execute:
   warning: false   
   freeze: true 
 ---
+
+# 1.Introduction
+
+FishEye analysts face a challenge: they purchased port exit records instead of ship off-load records. These records do not contain information about which vessels delivered the products. Therefore, we need to develop a method to associate vessels with their probable cargo. This report details our matching method used to address this issue.
+
+# 2.Overview of the Matching Method
+
+Our method consists of three main steps, gradually narrowing down the range of possible vessels:
+
+1.  Initial matching using Harbor_Reports_data
+
+2.  Further matching using TransponderPing data
+
+3.  Filtering unlikely vessels using Vessel Movement data
+
+# 3.Detailed Matching Process
+
+## 3.1 Initial Matching Using Harbor_Reports_data
+
+**Objective**: Identify vessels associated with each order by merging Transaction_data and Harbor_Reports_data based on date and port.
+
+**Method**:
+
+-   Left join Transaction_data with Harbor_Reports_data based on date and port
+
+-   For each transaction, identify vessels reported at the corresponding date and port
+
+## 3.2 Further Matching Using TransponderPing Data
+
+**Objective**: For orders not matched to vessels in step 3.1, use TransponderPing data to identify potential vessels.
+
+**Method**:
+
+-   For records where ProbableVessel is NA, match using transaction date and port with TransponderPing data
+
+-   Identify vessels with signals near the corresponding date and port
+
+**Insight**: After completing this step, we found that all previously unmatched cases correspond to multiple possible vessels, indicating the need for further filtering.
+
+## 3.3 Filtering Unlikely Vessels Using Vessel Movement Data
+
+**Objective**: Use vessel_movement_data to determine the paths of vessels associated with each transaction during the observation period, and filter out unlikely vessels from the list of potential candidates.
+
+**Method**:
+
+1.  Historical Path Analysis:
+
+    -   Examine the routes of all vessels associated with the current record within 24 hours before and after the current record time.
+
+2.  Criteria for Identifying Vessels That Delivered Products:
+
+    -   Arrival Record: The vessel has a documented arrival at the port.
+
+    -   Previous and Next Port Records: The vessel has records of arriving from a previous port and/or departing to another port after unloading.
+
+3.  Identifying Unlikely Vessels:
+
+    -   Exclude the following vessels:\
+        a)  Vessels that did not significantly change their geographical location within the observation time window (potentially docked at the current port).\
+        b)  Vessels showing frequent geographical movements, which may indicate tourism or sightseeing activities rather than cargo transport.
+
+# 4.Conclusion
+
+Through this multi-step matching process, we were able to associate vessels with their probable cargo, overcoming the limitation of lacking direct ship off-load records in the original data. This method integrates port reports, transponder signals, and vessel movement data to construct a relatively comprehensive association picture.
+
+Based on this matching method, we further developed an interactive visualization system, enabling analysts to visually explore and validate these associations.
+
+```{r}
+pacman::p_load(sf, tidyverse,jsonlite,dplyr,stringr,knitr,ggplot2,lubridate,ggiraph,viridis,plotly,gridExtra,readr)
+
+Transaction_matchresult2_visual <- read_rds("thresult.rds")
+
+# 创建交互式散点图
+p <- ggplot(Transaction_matchresult2_visual, aes(x = quarter, y = 0, fill = unmatch,
+                                                 data_id = source.transaction,
+                                                 tooltip = paste("Date:", date_added, "<br>",
+                                                                 "Source Transaction:", source.transaction, "<br>",
+                                                                 "Probable Vessel:", probable_vessel))) +
+  geom_point_interactive(size = 5, shape = 21, color = "white", 
+                         position = position_jitter(width = 0.4, height = 0.05)) +
+  scale_fill_manual(values = c("match" = "green", "unmatch" = "red")) +
+  labs(title = "Summary of Cargos Match across Date & Quantity",
+       x = "Transaction Quarter", y = NULL, fill = "Match Status") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 20),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20),
+        panel.grid.major.x = element_line(color = "gray", linetype = "dashed"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.text = element_text(size = 20),
+        strip.text.y = element_text(size = 20, angle = 0),
+        legend.position = "top",
+        strip.background = element_rect(fill = "gray80", color = "gray50"), # 设置facet标题栏背景颜色
+        panel.background = element_rect(fill = "gray90"), # 设置facet区域背景颜色
+        plot.title = element_text(size = 25, hjust = 0.5)) +
+  facet_grid(target ~ ., scales = "free", space = "free") +
+  guides(x = guide_axis(angle = 45))
+
+# 转换为交互式图表
+girafe(ggobj = p, width_svg = 25, height_svg = 15, options = list(
+  opts_sizing(rescale = TRUE)))
+```

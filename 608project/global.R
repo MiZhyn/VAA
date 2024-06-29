@@ -1,0 +1,6 @@
+if (!require(shiny)) install.packages("shiny")
+if (!require(ggiraph)) install.packages("ggiraph")
+if (!require(dplyr)) install.packages("dplyr")
+if (!require(shinydashboard)) install.packages("shinydashboard")
+if (!require(shinythemes)) install.packages("shinythemes")
+if (!require(plotly)) install.packages("plotly")
